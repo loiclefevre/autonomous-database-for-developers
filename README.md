@@ -1,12 +1,12 @@
 # Autonomous Database for Developers
 
-Repository providing various demos using an Oracle Autonomous Database. 
+Repository providing various demos using an Oracle Autonomous Database. Each demo is a Maven module depending upon the `common` module. 
 
 ## Setup
 You'll need to set several environment variables to be able to run these examples:
 - region: the OCI region where the Autonomous Database has been provisioned
 - user: the username you want to connect to the Autonomous Database 
-  (this will be the username that you'll create during demo1 and use later on)
+  (this will be the username that you'll create during **Demo 1** and use later on)
 - password: the password to connect to the Autonomous Database
 - database: the database name you want to connect to (unique name, see your tnsnames.ora inside the wallet)
 
@@ -18,20 +18,20 @@ You'll need to set several environment variables to be able to run these example
 - `export database=iq1ffzid3wfss2e_myatps`
 
 ## Demo 1 - Using the REST Enabled SQL Service to create a new database user
-_Don't forget to set the Spring active profile: `spring.profiles.active=demo1` in application.properties_
+`module sqlviarest`
 - WebClient synchronous call to the REST Enabled SQL Service powered by ORDS
 - Basic Authentication using the ADMIN user account of the database
 - JSON response mapping to a POJO
 
 ## Demo 2 - Connecting using Spring Boot JDBC
-_Don't forget to set the Spring active profile: `spring.profiles.active=demo2` in application.properties_
+`module connecting`
 - Using Oracle Easy Connect (EZCONNECT) passing JDBC Connection related arguments in the Connection string
 - Using jdbcTemplate to get the configured Row Fetch Size
 - Hikari connection pool
 - Liquibase changelog to create a table if it doesn't exist
 
 ## Demo 3 - Calling PL/SQL functions to manage database User Locks 
-_Don't forget to set the Spring active profile: `spring.profiles.active=demo3` in application.properties_
+`module userlocks`
 - SimpleJdbcCall configuration to work with Oracle provided PL/SQL packages
 - Example using the DBMS_LOCK package
   - acquiring an exclusive User Lock

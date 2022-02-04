@@ -1,7 +1,7 @@
-package com.example.demo3.locks;
+package com.example.userlocks.locks;
 
 public interface Locks {
-    // Results for DBMS_LOCK function calls
+	// Results for DBMS_LOCK function calls
 	int Success=0;
 	int Timeout=1;
 	int Deadlock=2;

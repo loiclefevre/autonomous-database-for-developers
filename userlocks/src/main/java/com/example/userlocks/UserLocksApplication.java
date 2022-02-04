@@ -1,4 +1,4 @@
-package com.example.demo3;
+package com.example.userlocks;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -21,15 +21,15 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 
-import static com.example.demo3.locks.Locks.AllocationExpirationSecs;
-import static com.example.demo3.locks.Locks.AlreadyOwning;
-import static com.example.demo3.locks.Locks.Deadlock;
-import static com.example.demo3.locks.Locks.ExclusiveMode;
-import static com.example.demo3.locks.Locks.IllegalLockHandle;
-import static com.example.demo3.locks.Locks.NotOwning;
-import static com.example.demo3.locks.Locks.ParameterError;
-import static com.example.demo3.locks.Locks.Success;
-import static com.example.demo3.locks.Locks.Timeout;
+import static com.example.userlocks.locks.Locks.AllocationExpirationSecs;
+import static com.example.userlocks.locks.Locks.AlreadyOwning;
+import static com.example.userlocks.locks.Locks.Deadlock;
+import static com.example.userlocks.locks.Locks.ExclusiveMode;
+import static com.example.userlocks.locks.Locks.IllegalLockHandle;
+import static com.example.userlocks.locks.Locks.NotOwning;
+import static com.example.userlocks.locks.Locks.ParameterError;
+import static com.example.userlocks.locks.Locks.Success;
+import static com.example.userlocks.locks.Locks.Timeout;
 import static java.sql.Types.NUMERIC;
 import static java.sql.Types.OTHER;
 import static java.sql.Types.VARCHAR;

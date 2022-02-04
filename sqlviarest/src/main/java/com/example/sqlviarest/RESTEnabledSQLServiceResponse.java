@@ -1,4 +1,4 @@
-package com.example.demo1;
+package com.example.sqlviarest;
 
 /**
  * POJO to map JSON results from REST Enabled SQL Service.
