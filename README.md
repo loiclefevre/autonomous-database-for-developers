@@ -17,27 +17,13 @@ You'll need to set several environment variables to be able to run these example
   requirements](https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/manage-users-create.html#GUID-72DFAF2A-C4C3-4FAC-A75B-846CC6EDBA3F))
 - `export database=iq1ffzid3wfss2e_myatps`
 
-## Demo 1 - Using the REST Enabled SQL Service to create a new database user
-`module sqlviarest`
-- WebClient synchronous call to the REST Enabled SQL Service powered by ORDS
-- Basic Authentication using the ADMIN user account of the database
-- JSON response mapping to a POJO
+## Demos
+The following demos are presented in a logical order so it is preferable starting with demo 1, then demo 2, etc...   
+- [Demo 1 - Using the REST Enabled SQL Service to create a new database user](./sqlviarest)
+- [Demo 2 - Connecting using Spring Boot JDBC](./connecting)
+- [Demo 3 - Calling PL/SQL functions to manage database User Locks](./userlocks)
 
-## Demo 2 - Connecting using Spring Boot JDBC
-`module connecting`
-- Using Oracle Easy Connect (EZCONNECT) passing JDBC Connection related arguments in the Connection string
-- Using jdbcTemplate to get the configured Row Fetch Size
-- Hikari connection pool
-- Liquibase changelog to create a table if it doesn't exist
-
-## Demo 3 - Calling PL/SQL functions to manage database User Locks 
-`module userlocks`
-- SimpleJdbcCall configuration to work with Oracle provided PL/SQL packages
-- Example using the DBMS_LOCK package
-  - acquiring an exclusive User Lock
-  - releasing a User Lock
-  - failing to get an exclusive User Lock already acquired by another session
-
-## Demo 4 - Generating AWR and ADDM reports in order to analyze performance
-## Demo 5 - Enabling Automatic Index reporting
-## Demo 6 - Distinguishing the service names to use, what and when? 
+### Coming next...
+- Demo 4 - Generating AWR and ADDM reports in order to analyze performance
+- Demo 5 -  Distinguishing the service names to use, what and when?
+- Demo 6 - Enabling Automatic Index reporting
