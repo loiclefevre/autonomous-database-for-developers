@@ -66,7 +66,7 @@ public class CreateUserApplication implements CommandLineRunner {
 						END;
 
 						/
-						""", System.getenv("user"), System.getenv("password")))
+						""", System.getenv("username"), System.getenv("password")))
 				.accept(MediaType.APPLICATION_JSON)
 				.retrieve()
 				.bodyToMono(RESTEnabledSQLServiceResponse.class)
