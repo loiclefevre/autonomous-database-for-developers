@@ -89,6 +89,8 @@ public class UserLocksApplication implements CommandLineRunner {
 				.withSchemaName("SYS")
 				.withCatalogName("dbms_lock")
 				.withFunctionName("request")
+				// no validation against database dictionary because of Spring
+				// doesn't support polymorphic functions
 				.withoutProcedureColumnMetaDataAccess()
 				.declareParameters(
 						new SqlOutParameter("return", NUMERIC),
@@ -102,6 +104,8 @@ public class UserLocksApplication implements CommandLineRunner {
 				.withSchemaName("SYS")
 				.withCatalogName("dbms_lock")
 				.withFunctionName("release")
+				// no validation against database dictionary because of Spring
+				// doesn't support polymorphic functions
 				.withoutProcedureColumnMetaDataAccess()
 				.declareParameters(
 						new SqlOutParameter("return", NUMERIC),
