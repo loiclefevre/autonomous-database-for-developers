@@ -2,12 +2,15 @@ package com.example.sqlviarest;
 
 import java.util.Objects;
 
+import com.example.common.oci.OciConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -20,20 +23,29 @@ import org.springframework.web.reactive.function.client.WebClient;
  *
  * @author Loïc Lefèvre
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.example")
 public class CreateUserApplication implements CommandLineRunner {
 	private static final Logger LOG = LoggerFactory.getLogger(CreateUserApplication.class);
 
+	private OciConfiguration ociConfiguration;
+
+	private DataSourceProperties dataSourceProperties;
+
+	public CreateUserApplication(OciConfiguration ociConfiguration, DataSourceProperties dataSourceProperties) {
+		this.ociConfiguration = ociConfiguration;
+		this.dataSourceProperties = dataSourceProperties;
+	}
+
 	@Override
-	public void run(String... args) throws Exception {
+	public void run(String... args)  {
 		LOG.info("=".repeat(126));
 
 		WebClient client = WebClient.builder()
 				.baseUrl(String.format("https://%s.adb.%s.oraclecloudapps.com",
-						System.getenv("database").replace('_', '-'),
-						System.getenv("region")))
+						ociConfiguration.getDatabase().replace('_', '-'),
+						ociConfiguration.getRegion()))
 				.defaultHeader(HttpHeaders.CONTENT_TYPE, "application/sql")
-				.defaultHeaders(header -> header.setBasicAuth("ADMIN", System.getenv("password")))
+				.defaultHeaders(header -> header.setBasicAuth(dataSourceProperties.getUsername(), dataSourceProperties.getPassword()))
 				.build();
 
 		RESTEnabledSQLServiceResponse result = client.post()
@@ -66,14 +78,14 @@ public class CreateUserApplication implements CommandLineRunner {
 						END;
 
 						/
-						""", System.getenv("user"), System.getenv("password")))
+						""",ociConfiguration.getSampleUsername(), ociConfiguration.getSamplePassword()))
 				.accept(MediaType.APPLICATION_JSON)
 				.retrieve()
 				.bodyToMono(RESTEnabledSQLServiceResponse.class)
 				.block();
 
 		for (String responseLine : Objects.requireNonNull(result).getItems()[0].getResponse()) {
-			LOG.info(responseLine.replaceAll(System.getenv("password"), "************"));
+			LOG.info(responseLine.replaceAll(dataSourceProperties.getPassword(), "************"));
 		}
 	}
 
