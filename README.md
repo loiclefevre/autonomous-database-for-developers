@@ -31,6 +31,6 @@ You'll need to set several environment variables to be able to run these example
 Apart an Autonomous Database, you'll need a JDK 17 and Maven.
 
 ### Coming next...
-- Demo 4 - Generating AWR and ADDM reports in order to analyze performance
-- Demo 5 -  Distinguishing the service names to use, what and when?
+- Demo 5 - Distinguishing the service names to use, what and when?
 - Demo 6 - Enabling Automatic Index reporting
+- Demo 7 - Working with an Autonomous JSON database using `MongoRepository`
