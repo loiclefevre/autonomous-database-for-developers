@@ -8,6 +8,7 @@ The following demos are presented in a logical order so it is preferable startin
 - [Demo 1 - Using the REST Enabled SQL Service to create a new database user](./sqlviarest)
 - [Demo 2 - Connecting using Spring Boot JDBC](./connecting)
 - [Demo 3 - Calling PL/SQL functions to manage database User Locks](./userlocks)
+- [Demo 4 - Generating AWR and ADDM reports in order to analyze performance](./awrreport)
 
 Each demo is a Maven module depending upon the `common` module.
 
