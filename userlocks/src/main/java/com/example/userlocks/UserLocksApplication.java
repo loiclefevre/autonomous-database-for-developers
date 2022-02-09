@@ -64,17 +64,16 @@ public class UserLocksApplication implements CommandLineRunner {
 	// Use this for passing PL/SQL Boolean parameters
 	private static final int PLSQL_BOOLEAN = 252;
 
-	@Qualifier("dataSource")
-	@Autowired
-	private DataSource dataSource;
-
-	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
 	// PL/SQL procedures/functions that we can call
 	private SimpleJdbcCall getLockHandleFromName;
 	private SimpleJdbcCall requestLockByName;
 	private SimpleJdbcCall releaseLockByName;
+
+	public UserLocksApplication(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
+	}
 
 	@PostConstruct
 	void init() {
@@ -164,6 +163,7 @@ public class UserLocksApplication implements CommandLineRunner {
 			case Deadlock -> LOG.info("Deadlock trying to acquire lock {}!", lockID);
 			case Timeout -> LOG.info("Exclusive lock NOT acquired because of Timeout!");
 			case IllegalLockHandle -> LOG.info("Lock {} NOT acquired because of illegal lock handle!", lockID);
+			default -> throw new IllegalStateException("Unexpected value: " + result);
 		}
 	}
 
@@ -173,6 +173,7 @@ public class UserLocksApplication implements CommandLineRunner {
 			case ParameterError -> LOG.info("Lock {} can't be released because of invocation parameter error!", lockID);
 			case NotOwning -> LOG.info("Lock {} NOT owned by me!", lockID);
 			case IllegalLockHandle -> LOG.info("Lock {} NOT released because of illegal lock handle!", lockID);
+			default -> throw new IllegalStateException("Unexpected value: " + result);
 		}
 	}
 
