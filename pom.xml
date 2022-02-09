@@ -23,6 +23,7 @@
         <module>sqlviarest</module>
         <module>connecting</module>
         <module>userlocks</module>
+        <module>awrreport</module>
     </modules>
 
     <properties>
