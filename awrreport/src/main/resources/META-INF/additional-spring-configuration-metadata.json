@@ -34,5 +34,10 @@
       "name": "app.datasource.primary.hikari.data-source-properties.oracle.jdbc.thinForceDNSLoadBalancing",
       "type": "java.lang.String",
       "description": "Description for app.datasource.primary.hikari.data-source-properties.oracle.jdbc.thinForceDNSLoadBalancing."
+    },
+    {
+      "name": "oci.tenant.database.ssl-server-cert-dn",
+      "type": "java.lang.String",
+      "description": "Description for oci.tenant.database.ssl-server-cert-dn."
     }
   ] }

@@ -14,6 +14,9 @@ public class OciConfiguration {
 	@Value("${oci.tenant.database.name}")
 	private String databaseName;
 
+	@Value("oci.tenant.database.ssl-server-cert-dn")
+	private String databaseSSLServerCertificateDistinguishedName;
+
 	// Primary Data Source configuration
 
 	@Value("${oci.tenant.database.service-name}")
@@ -56,6 +59,14 @@ public class OciConfiguration {
 
 	public void setDatabaseName(String databaseName) {
 		this.databaseName = databaseName;
+	}
+
+	public String getDatabaseSSLServerCertificateDistinguishedName() {
+		return databaseSSLServerCertificateDistinguishedName;
+	}
+
+	public void setDatabaseSSLServerCertificateDistinguishedName(String databaseSSLServerCertificateDistinguishedName) {
+		this.databaseSSLServerCertificateDistinguishedName = databaseSSLServerCertificateDistinguishedName;
 	}
 
 	public String getDatabaseUrl() {
@@ -127,6 +138,7 @@ public class OciConfiguration {
 		return "OciConfiguration{" +
 				"region='" + region + '\'' +
 				", databaseName='" + databaseName + '\'' +
+				", databaseSSLServerCertificateDistinguishedName='" + databaseSSLServerCertificateDistinguishedName + '\'' +
 				", databaseServiceName='" + databaseServiceName + '\'' +
 				", databaseUrl='" + databaseUrl + '\'' +
 				", databaseUsername='" + databaseUsername + '\'' +

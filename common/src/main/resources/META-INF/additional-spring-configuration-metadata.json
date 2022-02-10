@@ -44,5 +44,10 @@
       "name": "oci.tenant.database.admin-service-name",
       "type": "java.lang.String",
       "description": "Description for oci.tenant.database.admin-service-name."
+    },
+    {
+      "name": "oci.tenant.database.ssl-server-cert-dn",
+      "type": "java.lang.String",
+      "description": "Description for oci.tenant.database.ssl-server-cert-dn."
     }
   ] }

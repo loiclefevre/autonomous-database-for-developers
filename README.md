@@ -16,17 +16,19 @@ Each demo is a Maven module depending upon the `common` module.
 ## Setup
 You'll need to set several environment variables to be able to run these examples, these are related to your Autonomous Database:
 - region: the OCI region where the Autonomous Database has been provisioned
+- database: the unique database name you want to connect to (see the `DB Connection` on the OCI console)
+- database_ssl_cert_dn: the database SSL certificate (see the `DB Connection` on the OCI console)
 - username: the username you want to connect to the Autonomous Database 
   (this will be the username that you'll create during [Demo 1](./sqlviarest) and use later on)
 - password: the password to connect to the Autonomous Database
-- database: the database name you want to connect to (unique name, see your tnsnames.ora inside the wallet)
 
 #### Example
 - `export region=eu-marseille-1` (see [here for a list](https://docs.cloud.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm#top))
-- `export username=bob`
+- `export database=iq1ffzid3wfss2e_myatps`
+- `export database_ssl_cert_dn="CN=adb.eu-marseille-1.oraclecloud.com, OU=Oracle ADB MARSEILLE, O=Oracle Corporation, L=Redwood City, ST=California, C=US"`
+- `export username=demos`
 - `export password=5uper_Pa55w0rd` set this as the same as the ADMIN user (see [here for password complexity 
   requirements](https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/manage-users-create.html#GUID-72DFAF2A-C4C3-4FAC-A75B-846CC6EDBA3F))
-- `export database=iq1ffzid3wfss2e_myatps`
 
 ### Requirements
 Apart an Autonomous Database, you'll need a JDK 17 and Maven 3.X.
