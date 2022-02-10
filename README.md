@@ -46,3 +46,4 @@ In no particular order yet:
 - Applied Machine Learning on JSON data
 - Property Graph Analytics with PGX and PGQL
 - Using Oracle Machine Learning for Python using GraalVM
+- AutoREST for tables/schemas access

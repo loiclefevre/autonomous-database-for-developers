@@ -1,5 +1,6 @@
 package com.example.awrreport;
 
+import com.example.awrreport.model.RevenuePerYearPerBrandInEurope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -65,14 +67,59 @@ public class AWRReportApplication implements CommandLineRunner {
 				"select SYS.DBMS_WORKLOAD_REPOSITORY.CREATE_SNAPSHOT() from dual",
 				(rs, rowNum) -> rs.getLong(1)));
 
-		// Do some work using the PRIMARY data source connected with the HIGH database service name
-		final String sql = "select /*+ no_result_cache */ count(*) from SSB.LINEORDER";
+		// Do some work using the PRIMARY data source connected with the HIGH database consumer group
+		String sql = "select /*+ no_result_cache */ count(*) from SSB.LINEORDER";
 
-		LOG.info("Running some SQL query using the HIGH database service name: {}", sql);
+		LOG.info("Running some SQL query using the HIGH database consumer group (PARALLEL QUERY): {}", sql);
 		final long lineOrderRowsNumber = Objects.requireNonNull(primaryJdbcTemplate.queryForObject(
 				sql,
 				(rs, rowNum) -> rs.getLong(1)));
-		LOG.info("Query counted {} rows from SSB.LINE_ORDER table.", lineOrderRowsNumber);
+		LOG.warn("Query counted {} rows from SSB.LINEORDER table.", lineOrderRowsNumber);
+
+		// Queries from autonomous Database documentation
+		// https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/sample-queries.html
+		sql = """
+				select /*+ no_result_cache */ sum(lo_revenue), d_year, p_brand1
+			      from ssb.lineorder, ssb.dwdate, ssb.part, ssb.supplier
+				 where lo_orderdate = d_datekey
+				   and lo_partkey = p_partkey
+				   and lo_suppkey = s_suppkey
+				   and p_brand1 = 'MFGR#2221'
+				   and s_region = 'EUROPE'
+				group by d_year, p_brand1
+				order by d_year, p_brand1
+			""";
+
+		String sqlWithResultCache = """
+				select /*+ result_cache */ sum(lo_revenue), d_year, p_brand1
+			      from ssb.lineorder, ssb.dwdate, ssb.part, ssb.supplier
+				 where lo_orderdate = d_datekey
+				   and lo_partkey = p_partkey
+				   and lo_suppkey = s_suppkey
+				   and p_brand1 = 'MFGR#2221'
+				   and s_region = 'EUROPE'
+				group by d_year, p_brand1
+				order by d_year, p_brand1
+			""";
+
+		LOG.info("Running several times an Analytic SQL query using the HIGH database consumer group (PARALLEL QUERY):\n{}", sql);
+
+		for(int i = 0; i < 5; i++) {
+			if( i == 1 ) LOG.info("Now using Analytic query with result cache enabled:\n{}", sqlWithResultCache);
+			final List<RevenuePerYearPerBrandInEurope> analyticResults = Objects.requireNonNull(primaryJdbcTemplate.query(
+					i == 0 ? sql : sqlWithResultCache,
+					(rs, rowNum) -> new RevenuePerYearPerBrandInEurope(rs.getBigDecimal(1),
+							rs.getInt(2), rs.getString(3))));
+			LOG.info("_".repeat(126));
+			LOG.info("Iteration {}, query total revenues per brand in Europe and per year:",i+1);
+			LOG.info("REVENUE     \tYEAR\tBRAND");
+			for(RevenuePerYearPerBrandInEurope row:analyticResults) {
+				LOG.info("{}\t{}\t{}", row.revenue(), row.year(), row.brand());
+			}
+			if(i > 0) {
+				LOG.warn("Did you see the benefits of the /*+ result_cache */ hint?");
+			}
+		}
 
 		// Taking a SECOND snapshot of all internal database metrics using the ADMIN data source
 		LOG.info("Taking the SECOND snapshot of all internal database metrics using the ADMIN data source...");
