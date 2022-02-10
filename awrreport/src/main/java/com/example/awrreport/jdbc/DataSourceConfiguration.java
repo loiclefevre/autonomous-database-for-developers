@@ -1,9 +1,6 @@
 package com.example.awrreport.jdbc;
 
-import javax.sql.DataSource;
-
 import com.zaxxer.hikari.HikariDataSource;
-
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -12,8 +9,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import javax.sql.DataSource;
+
 @Configuration
-public class DataSourcesConfiguration {
+public class DataSourceConfiguration {
 	@Bean
 	@Primary
 	@ConfigurationProperties("app.datasource.primary")
@@ -23,7 +22,7 @@ public class DataSourcesConfiguration {
 
 	@Bean(name="primaryDataSource")
 	@Primary
-	@ConfigurationProperties("app.datasource.primary.configuration")
+	@ConfigurationProperties("app.datasource.primary.hikari")
 	public DataSource primaryDataSource() {
 		return primaryDataSourceProperties().initializeDataSourceBuilder()
 				.type(HikariDataSource.class).build();
@@ -41,7 +40,7 @@ public class DataSourcesConfiguration {
 	}
 
 	@Bean(name="adminDataSource")
-	@ConfigurationProperties("app.datasource.admin.configuration")
+	@ConfigurationProperties("app.datasource.admin.hikari")
 	public DataSource adminDataSource() {
 		return adminDataSourceProperties().initializeDataSourceBuilder()
 				.type(HikariDataSource.class).build();

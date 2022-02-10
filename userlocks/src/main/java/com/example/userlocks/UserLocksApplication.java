@@ -1,16 +1,8 @@
 package com.example.userlocks;
 
-import java.math.BigDecimal;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,18 +13,12 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 
-import static com.example.userlocks.locks.Locks.AllocationExpirationSecs;
-import static com.example.userlocks.locks.Locks.AlreadyOwning;
-import static com.example.userlocks.locks.Locks.Deadlock;
-import static com.example.userlocks.locks.Locks.ExclusiveMode;
-import static com.example.userlocks.locks.Locks.IllegalLockHandle;
-import static com.example.userlocks.locks.Locks.NotOwning;
-import static com.example.userlocks.locks.Locks.ParameterError;
-import static com.example.userlocks.locks.Locks.Success;
-import static com.example.userlocks.locks.Locks.Timeout;
-import static java.sql.Types.NUMERIC;
-import static java.sql.Types.OTHER;
-import static java.sql.Types.VARCHAR;
+import javax.annotation.PostConstruct;
+import java.math.BigDecimal;
+import java.util.Map;
+
+import static com.example.userlocks.locks.Locks.*;
+import static java.sql.Types.*;
 
 /**
  * This demo shows how to connect to an Autonomous Database using the default HikariCP
@@ -57,16 +43,12 @@ import static java.sql.Types.VARCHAR;
  * @see <a href="https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/">all PL/SQL packages for 19c</a>
  * @see <a href="https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/appendix-database-pl-sql-packages-restrictions.html#GUID-829A7D07-1EA4-4F59-AA60-F780FABAFDEC">here for any limitation</a>
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.example")
 public class UserLocksApplication implements CommandLineRunner {
 	private static final Logger LOG = LoggerFactory.getLogger(UserLocksApplication.class);
 
 	// Use this for passing PL/SQL Boolean parameters
 	private static final int PLSQL_BOOLEAN = 252;
-
-	@Qualifier("dataSource")
-	@Autowired
-	private DataSource dataSource;
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -81,6 +63,7 @@ public class UserLocksApplication implements CommandLineRunner {
 		// Allows getting output values without any lower/upper case "problem"
 		jdbcTemplate.setResultsMapCaseInsensitive(true);
 
+		// Preparing Stored Procedures/Functions call using SimpleJdbcCall
 		getLockHandleFromName = new SimpleJdbcCall(jdbcTemplate)
 				.withSchemaName("SYS")
 				.withCatalogName("dbms_lock")
@@ -90,8 +73,8 @@ public class UserLocksApplication implements CommandLineRunner {
 				.withSchemaName("SYS")
 				.withCatalogName("dbms_lock")
 				.withFunctionName("request")
-				// no validation against database dictionary because of Spring
-				// doesn't support polymorphic functions
+				// no validation against database dictionary because Spring
+				// doesn't support polymorphic functions... yet
 				.withoutProcedureColumnMetaDataAccess()
 				.declareParameters(
 						new SqlOutParameter("return", NUMERIC),
@@ -105,8 +88,8 @@ public class UserLocksApplication implements CommandLineRunner {
 				.withSchemaName("SYS")
 				.withCatalogName("dbms_lock")
 				.withFunctionName("release")
-				// no validation against database dictionary because of Spring
-				// doesn't support polymorphic functions
+				// no validation against database dictionary because Spring
+				// doesn't support polymorphic functions... yet
 				.withoutProcedureColumnMetaDataAccess()
 				.declareParameters(
 						new SqlOutParameter("return", NUMERIC),
@@ -122,17 +105,18 @@ public class UserLocksApplication implements CommandLineRunner {
 
 		LOG.info("Lock name is: {}", lockName);
 
-		// Get an ID mapped to this lock name and keep it for the next 10 days
+		// Get a lock handle mapped to this lock *name* and keep it for the next 10 days
 		SqlParameterSource in = new MapSqlParameterSource()
 				.addValue("lockname", lockName)
 				.addValue("expiration_secs", AllocationExpirationSecs);
 
-		Map<String, Object> out = getLockHandleFromName.execute(in);
+		final Map<String, Object> out = getLockHandleFromName.execute(in);
 
 		final String lockHandle = (String) out.get("lockhandle");
 
-		LOG.info("Lock Handle: {}", lockHandle);
+		LOG.info("Lock handle: {}", lockHandle);
 
+		// Request an exclusive lock using the lock handle
 		in = new MapSqlParameterSource()
 				.addValue("lockhandle", lockHandle)
 				.addValue("lockmode", ExclusiveMode)
@@ -143,12 +127,15 @@ public class UserLocksApplication implements CommandLineRunner {
 
 		printRequestStatus(result, lockName);
 
+		// Wait 5 seconds if lock was acquired without any problem
+		// (e.g. no one else acquired it already)
 		if (result != Timeout) {
 			final long secondsToSleep = 5;
 			LOG.info("Sleeping for {} seconds...", secondsToSleep);
 			Thread.sleep(secondsToSleep * 1000L);
 		}
 
+		// Release the lock using its handle
 		in = new MapSqlParameterSource()
 				.addValue("lockhandle", lockHandle);
 
@@ -157,22 +144,34 @@ public class UserLocksApplication implements CommandLineRunner {
 		printReleaseStatus(result, lockName);
 	}
 
-	private static void printRequestStatus(int result, String lockID) {
+	/**
+	 * Translates returned code into message and display it.
+	 * @param result returned code from calling sys.dbms_lock.request()
+	 * @param lockHandle the lock handle
+	 */
+	private static void printRequestStatus(int result, String lockHandle) {
 		switch (result) {
-			case Success -> LOG.info("Exclusive lock {} acquired!", lockID);
-			case AlreadyOwning -> LOG.info("Exclusive lock {} already owned by me!", lockID);
-			case Deadlock -> LOG.info("Deadlock trying to acquire lock {}!", lockID);
+			case Success -> LOG.info("Exclusive lock {} acquired!", lockHandle);
+			case AlreadyOwning -> LOG.info("Exclusive lock {} already owned by me!", lockHandle);
+			case Deadlock -> LOG.info("Deadlock trying to acquire lock {}!", lockHandle);
 			case Timeout -> LOG.info("Exclusive lock NOT acquired because of Timeout!");
-			case IllegalLockHandle -> LOG.info("Lock {} NOT acquired because of illegal lock handle!", lockID);
+			case IllegalLockHandle -> LOG.info("Lock {} NOT acquired because of illegal lock handle!", lockHandle);
+			default -> throw new IllegalStateException("Unexpected value: " + result);
 		}
 	}
 
-	private static void printReleaseStatus(int result, String lockID) {
+	/**
+	 * Translates returned code into message and display it.
+	 * @param result returned code from calling sys.dbms_lock.release()
+	 * @param lockHandle the lock handle
+	 */
+	private static void printReleaseStatus(int result, String lockHandle) {
 		switch (result) {
-			case Success -> LOG.info("Lock {} released!", lockID);
-			case ParameterError -> LOG.info("Lock {} can't be released because of invocation parameter error!", lockID);
-			case NotOwning -> LOG.info("Lock {} NOT owned by me!", lockID);
-			case IllegalLockHandle -> LOG.info("Lock {} NOT released because of illegal lock handle!", lockID);
+			case Success -> LOG.info("Lock {} released!", lockHandle);
+			case ParameterError -> LOG.info("Lock {} can't be released because of invocation parameter error!", lockHandle);
+			case NotOwning -> LOG.info("Lock {} NOT owned by me!", lockHandle);
+			case IllegalLockHandle -> LOG.info("Lock {} NOT released because of illegal lock handle!", lockHandle);
+			default -> throw new IllegalStateException("Unexpected value: " + result);
 		}
 	}
 

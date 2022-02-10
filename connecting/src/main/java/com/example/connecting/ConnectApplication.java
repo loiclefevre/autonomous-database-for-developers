@@ -1,18 +1,17 @@
 package com.example.connecting;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.Objects;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Objects;
 
 /**
  * This demo shows how to connect to an Autonomous Database using the default HikariCP
@@ -22,7 +21,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
  *
  * @author Loïc Lefèvre
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.example")
 public class ConnectApplication implements CommandLineRunner {
 	private static final Logger LOG = LoggerFactory.getLogger(ConnectApplication.class);
 

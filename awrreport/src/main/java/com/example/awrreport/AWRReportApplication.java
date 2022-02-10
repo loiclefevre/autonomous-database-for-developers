@@ -1,16 +1,7 @@
 package com.example.awrreport;
 
-import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
-import java.util.Objects;
-
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
@@ -21,7 +12,13 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcCall;
+
+import javax.annotation.PostConstruct;
+import java.io.BufferedOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.util.Objects;
 
 /**
  * This demo shows how to configure 2 distinct connection pools to an Autonomous Database
@@ -33,7 +30,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall;
  *
  * @author Loïc Lefèvre
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.example")
 public class AWRReportApplication implements CommandLineRunner {
 	private static final Logger LOG = LoggerFactory.getLogger(AWRReportApplication.class);
 
@@ -45,18 +42,14 @@ public class AWRReportApplication implements CommandLineRunner {
 	@Qualifier("adminJdbcTemplate")
 	private JdbcTemplate adminJdbcTemplate;
 
-	// PL/SQL procedures/functions that we can call
-	private SimpleJdbcCall getLockHandleFromName;
-
 	@PostConstruct
 	void init() {
 		// Allows getting output values without any lower/upper case "problem"
 		adminJdbcTemplate.setResultsMapCaseInsensitive(true);
-
 	}
 
 	@Override
-	public void run(String... args) throws Exception {
+	public void run(String... args) {
 		LOG.info("=".repeat(126));
 
 		LOG.info("Primary data source username: {}",
@@ -69,21 +62,22 @@ public class AWRReportApplication implements CommandLineRunner {
 
 		LOG.info("Taking a snapshot of all internal database metrics using the ADMIN data source...");
 		final long startSnapID = Objects.requireNonNull(adminJdbcTemplate.queryForObject(
-				"select DBMS_WORKLOAD_REPOSITORY.CREATE_SNAPSHOT() from dual",
+				"select SYS.DBMS_WORKLOAD_REPOSITORY.CREATE_SNAPSHOT() from dual",
 				(rs, rowNum) -> rs.getLong(1)));
 
 		// Do some work using the PRIMARY data source connected with the HIGH database service name
-		final String sql = "select /*+ result_cache */ count(*) from ssb.lineorder";
+		final String sql = "select /*+ no_result_cache */ count(*) from SSB.LINEORDER";
 
 		LOG.info("Running some SQL query using the HIGH database service name: {}", sql);
 		final long lineOrderRowsNumber = Objects.requireNonNull(primaryJdbcTemplate.queryForObject(
-				sql, (rs, rowNum) -> rs.getLong(1)));
+				sql,
+				(rs, rowNum) -> rs.getLong(1)));
 		LOG.info("Query counted {} rows from SSB.LINE_ORDER table.", lineOrderRowsNumber);
 
 		// Taking a SECOND snapshot of all internal database metrics using the ADMIN data source
 		LOG.info("Taking the SECOND snapshot of all internal database metrics using the ADMIN data source...");
 		final long endSnapID = Objects.requireNonNull(adminJdbcTemplate.queryForObject(
-				"select DBMS_WORKLOAD_REPOSITORY.CREATE_SNAPSHOT() from dual",
+				"select SYS.DBMS_WORKLOAD_REPOSITORY.CREATE_SNAPSHOT() from dual",
 				(rs, rowNum) -> rs.getLong(1)));
 
 		// And now generates the AWR report
@@ -109,7 +103,7 @@ public class AWRReportApplication implements CommandLineRunner {
 
 			// https://docs.oracle.com/en/database/oracle/oracle-database/19/arpls/DBMS_WORKLOAD_REPOSITORY.html#GUID-A0165998-4E64-4FCE-AFB8-3C7C43146C27
 			parameters = new MapSqlParameterSource()
-					.addValue("dbid", dbID)
+					.addValue("db_id", dbID)
 					.addValue("start_snap_id", startSnapID)
 					.addValue("end_snap_id", endSnapID)
 					.addValue("options", 8);
@@ -117,11 +111,11 @@ public class AWRReportApplication implements CommandLineRunner {
 			namedParameterAdminJdbcTemplate.queryForStream("""
 							SELECT output
 							  FROM TABLE(
-							              DBMS_WORKLOAD_REPOSITORY.AWR_GLOBAL_REPORT_HTML(
-							                 :dbid,
-							                 '', 
-							                 :start_snap_id, 
-							                 :end_snap_id, 
+							              SYS.DBMS_WORKLOAD_REPOSITORY.AWR_GLOBAL_REPORT_HTML(
+							                 :db_id,
+							                 '',
+							                 :start_snap_id,
+							                 :end_snap_id,
 							                 :options
 							              )
 							       )""",

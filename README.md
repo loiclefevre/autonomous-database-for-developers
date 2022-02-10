@@ -8,7 +8,8 @@ The following demos are presented in a logical order so it is preferable startin
 - [Demo 1 - Using the REST Enabled SQL Service to create a new database user](./sqlviarest)
 - [Demo 2 - Connecting using Spring Boot JDBC](./connecting)
 - [Demo 3 - Calling PL/SQL functions to manage database User Locks](./userlocks)
-- [Demo 4 - Generating AWR and ADDM reports in order to analyze performance](./awrreport)
+- [Demo 4 - Distinguishing the database consumer groups to use: what and when?](./dbconsumergroups)
+- [Demo 5 - Generating AWR and ADDM reports in order to analyze performance](./awrreport)
 
 Each demo is a Maven module depending upon the `common` module.
 
@@ -28,9 +29,20 @@ You'll need to set several environment variables to be able to run these example
 - `export database=iq1ffzid3wfss2e_myatps`
 
 ### Requirements
-Apart an Autonomous Database, you'll need a JDK 17 and Maven.
+Apart an Autonomous Database, you'll need a JDK 17 and Maven 3.X.
 
 ### Coming next...
-- Demo 5 - Distinguishing the service names to use, what and when?
-- Demo 6 - Enabling Automatic Index reporting
-- Demo 7 - Working with an Autonomous JSON database using `MongoRepository`
+In no particular order yet:
+- Working with an Autonomous JSON database using `MongoRepository`
+- SQL query joining JSON and Relational data together
+- Using Advanced Queuing (transactional queues) to notify application that data changed
+- Using Blockchain/Immutables tables
+- Understanding the benefits for developers of the Autonomous database underlying infrastructure: Exadata
+- Spatial queries over GeoJSON data
+- Reactive R2DBC driver
+- Understanding execution plans and session statistics
+- Automatic partitioning unleashed
+- Automatic indexing unleashed
+- Applied Machine Learning on JSON data
+- Property Graph Analytics with PGX and PGQL
+- Using Oracle Machine Learning for Python using GraalVM

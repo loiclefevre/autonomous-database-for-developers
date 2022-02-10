@@ -1,4 +1,4 @@
-package com.example.sqlviarest;
+package com.example.sqlviarest.model;
 
 /**
  * POJO to map JSON results from REST Enabled SQL Service.
@@ -36,7 +36,7 @@ public class RESTEnabledSQLServiceResponse {
 		}
 	}
 
-	static class SQLServiceResponseItem {
+	public static class SQLServiceResponseItem {
 		private int statementId;
 		private String statementType;
 		private String statementText;

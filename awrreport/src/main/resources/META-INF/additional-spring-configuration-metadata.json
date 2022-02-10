@@ -1,0 +1,38 @@
+{
+  "properties": [
+    {
+      "name": "app.datasource.primary.url",
+      "type": "java.lang.String",
+      "description": "Description for app.datasource.primary.url."
+    },
+    {
+      "name": "app.datasource.primary.username",
+      "type": "java.lang.String",
+      "description": "Description for app.datasource.primary.username."
+    },
+    {
+      "name": "app.datasource.primary.password",
+      "type": "java.lang.String",
+      "description": "Description for app.datasource.primary.password."
+    },
+    {
+      "name": "app.datasource.primary.driver-class-name",
+      "type": "java.lang.String",
+      "description": "Description for app.datasource.primary.driver-class-name."
+    },
+    {
+      "name": "app.datasource.primary.hikari.connection-timeout",
+      "type": "java.lang.String",
+      "description": "Description for app.datasource.primary.hikari.connection-timeout."
+    },
+    {
+      "name": "app.datasource.primary.hikari.auto-commit",
+      "type": "java.lang.String",
+      "description": "Description for app.datasource.primary.hikari.auto-commit."
+    },
+    {
+      "name": "app.datasource.primary.hikari.data-source-properties.oracle.jdbc.thinForceDNSLoadBalancing",
+      "type": "java.lang.String",
+      "description": "Description for app.datasource.primary.hikari.data-source-properties.oracle.jdbc.thinForceDNSLoadBalancing."
+    }
+  ] }
