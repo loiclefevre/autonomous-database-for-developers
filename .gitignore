@@ -10,3 +10,9 @@ buildNumber.properties
 .mvn/timing.properties
 # https://github.com/takari/maven-wrapper#usage-without-binary-jar
 .mvn/wrapper/maven-wrapper.jar
+/awrreport/awrreport.iml
+/awrreport/awr*.html
+/common/common.iml
+/connecting/connecting.iml
+/sqlviarest/sqlviarest.iml
+/userlocks/userlocks.iml

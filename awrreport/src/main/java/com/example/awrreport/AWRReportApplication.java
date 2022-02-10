@@ -70,7 +70,7 @@ public class AWRReportApplication implements CommandLineRunner {
 		// Do some work using the PRIMARY data source connected with the HIGH database consumer group
 		String sql = "select /*+ no_result_cache */ count(*) from SSB.LINEORDER";
 
-		LOG.info("Running some SQL query using the HIGH database consumer group (PARALLEL QUERY): {}", sql);
+		LOG.info("Running some SQL query using the HIGH database consumer group (PARALLEL QUERY):\n{}", sql);
 		final long lineOrderRowsNumber = Objects.requireNonNull(primaryJdbcTemplate.queryForObject(
 				sql,
 				(rs, rowNum) -> rs.getLong(1)));
