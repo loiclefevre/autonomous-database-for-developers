@@ -16,3 +16,5 @@ buildNumber.properties
 /connecting/connecting.iml
 /sqlviarest/sqlviarest.iml
 /userlocks/userlocks.iml
+/dbconsumergroups/dbconsumergroups.iml
+/transactionalqueue/transactionalqueue.iml
