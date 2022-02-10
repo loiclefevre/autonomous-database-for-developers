@@ -10,6 +10,7 @@ The following demos are presented in a logical order so it is preferable startin
 - [Demo 3 - Calling PL/SQL functions to manage database User Locks](./userlocks)
 - [Demo 4 - Distinguishing the database consumer groups to use: what and when?](./dbconsumergroups)
 - [Demo 5 - Generating AWR and ADDM reports in order to analyze performance](./awrreport)
+- [Demo 6 - Using Advanced Queuing (transactional queues) to notify application with events](./transactionalqueue)
 
 Each demo is a Maven module depending upon the `common` module.
 
@@ -37,7 +38,6 @@ Apart an Autonomous Database, you'll need a JDK 17 and Maven 3.X.
 In no particular order yet:
 - Working with an Autonomous JSON database using `MongoRepository`
 - SQL query joining JSON and Relational data together
-- Using Advanced Queuing (transactional queues) to notify application that data changed
 - Using Blockchain/Immutables tables
 - Understanding the benefits for developers of the Autonomous database underlying infrastructure: Exadata
 - Spatial queries over GeoJSON data

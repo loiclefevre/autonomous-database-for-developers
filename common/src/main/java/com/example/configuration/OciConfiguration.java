@@ -14,7 +14,7 @@ public class OciConfiguration {
 	@Value("${oci.tenant.database.name}")
 	private String databaseName;
 
-	@Value("oci.tenant.database.ssl-server-cert-dn")
+	@Value("${oci.tenant.database.ssl-server-cert-dn}")
 	private String databaseSSLServerCertificateDistinguishedName;
 
 	// Primary Data Source configuration
