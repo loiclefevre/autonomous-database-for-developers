@@ -41,6 +41,10 @@ BEGIN
     -- Used for demo #3 about User Locks, grant access to the PL/SQL package
     execute immediate 'grant execute on DBMS_LOCK to ' || username;
 
+    -- Useful for Advance Queuing
+    execute immediate 'grant aq_administrator_role, aq_user_role to ' || username;
+    execute immediate 'grant execute on DBMS_AQ to ' || username;
+
     -- Grant access to Database Actions online tools (Browsers GUI)
     ords_metadata.ords_admin.enable_schema(p_enabled => TRUE, p_schema => upper(username), p_url_mapping_type => 'BASE_PATH', p_url_mapping_pattern => lower(username), p_auto_rest_auth => TRUE);
 END;

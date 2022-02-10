@@ -49,3 +49,5 @@ In no particular order yet:
 - Property Graph Analytics with PGX and PGQL
 - Using Oracle Machine Learning for Python using GraalVM
 - AutoREST for tables/schemas access
+- Application Continuity
+- 
