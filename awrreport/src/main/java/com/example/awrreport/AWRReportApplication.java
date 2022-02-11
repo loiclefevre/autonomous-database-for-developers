@@ -36,13 +36,14 @@ import java.util.Objects;
 public class AWRReportApplication implements CommandLineRunner {
 	private static final Logger LOG = LoggerFactory.getLogger(AWRReportApplication.class);
 
-	@Autowired
-	@Qualifier("primaryJdbcTemplate")
 	private JdbcTemplate primaryJdbcTemplate;
 
-	@Autowired
-	@Qualifier("adminJdbcTemplate")
 	private JdbcTemplate adminJdbcTemplate;
+
+	public AWRReportApplication(JdbcTemplate primaryJdbcTemplate, JdbcTemplate adminJdbcTemplate) {
+		this.primaryJdbcTemplate = primaryJdbcTemplate;
+		this.adminJdbcTemplate = adminJdbcTemplate;
+	}
 
 	@PostConstruct
 	void init() {

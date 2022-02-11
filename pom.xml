@@ -68,7 +68,6 @@
         <dependency>
             <groupId>com.github.blagerweij</groupId>
             <artifactId>liquibase-sessionlock</artifactId>
-            <version>1.4.0</version>
         </dependency>
 
         <!-- Oracle JDBC drivers -->

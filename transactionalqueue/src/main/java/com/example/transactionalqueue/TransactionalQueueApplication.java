@@ -20,7 +20,6 @@ import java.util.Objects;
 
 @SpringBootApplication(scanBasePackages = "com.example")
 @EnableAsync
-@Controller
 public class TransactionalQueueApplication implements CommandLineRunner {
 	private static final Logger LOG = LoggerFactory.getLogger(TransactionalQueueApplication.class);
 
