@@ -26,6 +26,7 @@
         <module>awrreport</module>
         <module>dbconsumergroups</module>
         <module>transactionalqueue</module>
+        <module>mongodbapi</module>
     </modules>
 
     <properties>

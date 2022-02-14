@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "oci.tenant.database.mongodbapi.url",
+      "type": "java.lang.String",
+      "description": "Description for oci.tenant.database.mongodbapi.url."
+  }
+] }
