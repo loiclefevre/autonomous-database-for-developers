@@ -4,7 +4,8 @@
 BEGIN
     DBMS_AQADM.CREATE_QUEUE_TABLE(
             queue_table        =>  'AQ_NOTIFICATIONS_TBL',
-            queue_payload_type =>  'RAW');
+            queue_payload_type =>  'RAW',
+            sort_list          =>  'PRIORITY, ENQ_TIME');
 
     DBMS_AQADM.CREATE_QUEUE(
             queue_name         =>  'AQ_NOTIFICATIONS_QUEUE',

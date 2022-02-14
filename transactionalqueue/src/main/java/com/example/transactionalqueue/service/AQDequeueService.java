@@ -45,8 +45,13 @@ public class AQDequeueService implements Runnable {
 			final AQQueue queue = aqSessionForDequeue.getQueue(ociConfiguration.getDatabaseUsername(), "AQ_NOTIFICATIONS_QUEUE");
 
 			while (true) {
-				LOG.warn("Thread {} received message: {}",
-						Thread.currentThread().getName(), getMessage(queue, new AQDequeueOption()));
+				final Event event = getMessage(queue, new AQDequeueOption());
+
+				if(event.priority == AQEnqueueService.HIGH_PRIORITY) {
+					LOG.warn("Thread {} received HIGH priority message: {}", Thread.currentThread().getName(), event.message() );
+				} else {
+					LOG.warn("Thread {} received message: {}", Thread.currentThread().getName(), event.message() );
+				}
 
 				Thread.yield();
 			}
@@ -61,13 +66,15 @@ public class AQDequeueService implements Runnable {
 		}
 	}
 
-	String getMessage(AQQueue queue, AQDequeueOption dequeueOption) throws SQLException {
+	record Event(String message, int priority) {};
+
+	Event getMessage(AQQueue queue, AQDequeueOption dequeueOption) throws SQLException {
 		try {
 			final AQMessage event = queue.dequeue(dequeueOption);
 
 			aqSessionForDequeue.getDBConnection().commit();
 
-			return new String(event.getRawPayload().getBytes());
+			return new Event(new String(event.getRawPayload().getBytes()), event.getMessageProperty().getPriority());
 		}
 		catch (AQException aqe) {
 			try { aqSessionForDequeue.getDBConnection().rollback(); }

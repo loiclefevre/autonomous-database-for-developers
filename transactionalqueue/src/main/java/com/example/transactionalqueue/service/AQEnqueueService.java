@@ -5,6 +5,7 @@ import oracle.AQ.AQDriverManager;
 import oracle.AQ.AQEnqueueOption;
 import oracle.AQ.AQException;
 import oracle.AQ.AQMessage;
+import oracle.AQ.AQMessageProperty;
 import oracle.AQ.AQQueue;
 import oracle.AQ.AQSession;
 import org.springframework.stereotype.Component;
@@ -17,13 +18,16 @@ import java.sql.SQLException;
 import java.util.Locale;
 
 /**
- * Enqueue service managing transactional events to send into the queue.
+ * Enqueue service managing transactional events to send into the queue. The priority of events is also demonstrated.
  *
  * @author Loïc Lefèvre
  */
 @Component
 @Service
 public class AQEnqueueService {
+
+	public static final int HIGH_PRIORITY = -1;
+	public static final int DEFAULT_PRIORITY = 0;
 
 	private OciConfiguration ociConfiguration;
 
@@ -34,7 +38,7 @@ public class AQEnqueueService {
 		this.dataSource = dataSource;
 	}
 
-	public void sendJSONEventInTransaction(String queueName, BigDecimal orderAmount) throws SQLException {
+	public void sendJSONEventInTransaction(String queueName, BigDecimal orderAmount, int priority) throws SQLException {
 		try (Connection connection = dataSource.getConnection()) {
 			try {
 				final AQSession aqSession = AQDriverManager.createAQSession(connection.unwrap(oracle.jdbc.OracleConnection.class));
@@ -42,8 +46,12 @@ public class AQEnqueueService {
 				final AQEnqueueOption enqueueOption = new AQEnqueueOption();
 
 				final AQMessage message = queue.createMessage();
-
-				orderAmount = orderAmount.multiply(new BigDecimal("1.05")); // adding some VAT of 5%
+				final AQMessageProperty messageProperty =new AQMessageProperty();
+				// 0: default priority
+				// > 0 : lower priority
+				// < 0 : higher priority
+				messageProperty.setPriority(priority);
+				message.setMessageProperty(messageProperty);
 
 				final String jsonEvent = String.format(Locale.US, """
 						{"order": {"amount": %.2f} }""", orderAmount);

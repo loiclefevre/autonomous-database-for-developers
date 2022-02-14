@@ -18,6 +18,9 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import javax.sql.DataSource;
 import java.math.BigDecimal;
 
+import static com.example.transactionalqueue.service.AQEnqueueService.DEFAULT_PRIORITY;
+import static com.example.transactionalqueue.service.AQEnqueueService.HIGH_PRIORITY;
+
 /**
  * This demo illustrates how to use Oracle Advanced Queues to send and receive events within a transaction.
  *
@@ -59,7 +62,8 @@ public class TransactionalQueueApplication implements CommandLineRunner {
 
 		// sending 100 events
 		for (int i = 1; i <= 100; i++) {
-			aqEnqueueService.sendJSONEventInTransaction("AQ_NOTIFICATIONS_QUEUE", new BigDecimal(i));
+			aqEnqueueService.sendJSONEventInTransaction("AQ_NOTIFICATIONS_QUEUE", new BigDecimal(i),
+					i == 50 ? HIGH_PRIORITY : DEFAULT_PRIORITY );
 		}
 	}
 
