@@ -29,7 +29,6 @@ public class MongoDBConfiguration {
 				databaseUsername, databasePassword,
 				databaseName.replaceAll("_", "-"), region,
 				databaseUsername);
-		MongoClient mongoClient = MongoClients.create(uri);
-		return mongoClient;
+		return MongoClients.create(uri);
 	}
 }
