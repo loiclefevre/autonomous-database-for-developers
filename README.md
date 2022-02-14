@@ -37,17 +37,16 @@ Apart an Autonomous Database, you'll need a JDK 17 and Maven 3.X.
 
 ### Coming next...
 In no particular order yet:
+- Spatial queries over GeoJSON data
 - SQL query joining JSON and Relational data together
+- AutoREST for tables/schemas access
+- Understanding execution plans and session statistics
+- Application Continuity
 - Using Blockchain/Immutables tables
 - Understanding the benefits for developers of the Autonomous database underlying infrastructure: Exadata
-- Spatial queries over GeoJSON data
 - Reactive R2DBC driver
-- Understanding execution plans and session statistics
 - Automatic partitioning unleashed
 - Automatic indexing unleashed
 - Applied Machine Learning on JSON data
 - Property Graph Analytics with PGX and PGQL
 - Using Oracle Machine Learning for Python using GraalVM
-- AutoREST for tables/schemas access
-- Application Continuity
-- 

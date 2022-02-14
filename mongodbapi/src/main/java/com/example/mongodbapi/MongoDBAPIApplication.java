@@ -36,7 +36,7 @@ public class MongoDBAPIApplication implements CommandLineRunner {
 
 		load1000Snippets();
 
-		for(Snippet s : snippetRepository.findByLanguage("javascript").subList(1,3) ) {
+		for (Snippet s : snippetRepository.findByLanguage("javascript").subList(1, 3)) {
 			LOG.info("JavaScript snippet: {}", s);
 		}
 
@@ -44,15 +44,15 @@ public class MongoDBAPIApplication implements CommandLineRunner {
 
 		final List<SnippetCountPerLanguage> analyticResults = Objects.requireNonNull(jdbcTemplate.query(
 				"""
-     					select s.data.language, count(*)
-     					  from snippet s
-     				  group by s.data.language
-     				  order by 2 desc 
-     				  fetch first 3 rows only
-				""",
+						 					select s.data.language, count(*)
+						 					  from snippet s
+						 				  group by s.data.language
+						 				  order by 2 desc 
+						 				  fetch first 3 rows only
+						""",
 				(rs, rowNum) -> new SnippetCountPerLanguage(rs.getString(1), rs.getLong(2))));
 
-		for(SnippetCountPerLanguage ar : analyticResults) {
+		for (SnippetCountPerLanguage ar : analyticResults) {
 			LOG.info("- language {} has {} snippet(s)", ar.language(), ar.count());
 		}
 	}
@@ -60,20 +60,20 @@ public class MongoDBAPIApplication implements CommandLineRunner {
 	private void load1000Snippets() {
 		Random random = new Random(1234);
 
-		final List<Snippet> listofsnippets = new ArrayList<>();
-		for(int i = 0; i < 1000; i++) {
+		final List<Snippet> listOfSnippets = new ArrayList<>();
+		for (int i = 0; i < 1000; i++) {
 			Snippet snippet;
 
-			switch(random.nextInt(0,3)) {
+			switch (random.nextInt(0, 3)) {
 				case 0 -> snippet = new Snippet(String.format("alert('test %d');", i), "javascript");
 				case 1 -> snippet = new Snippet(String.format("System.out.println(\"test %d\");", i), "java");
 				default -> snippet = new Snippet(String.format("print('test %d')", i), "python");
 			}
 
-			listofsnippets.add(snippet);
+			listOfSnippets.add(snippet);
 		}
 
-		snippetRepository.insert(listofsnippets);
+		snippetRepository.insert(listOfSnippets);
 	}
 
 	public static void main(String[] args) {
