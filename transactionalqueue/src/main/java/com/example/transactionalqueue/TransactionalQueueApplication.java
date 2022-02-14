@@ -1,74 +1,70 @@
 package com.example.transactionalqueue;
 
-import oracle.AQ.AQEnqueueOption;
-import oracle.AQ.AQMessage;
-import oracle.AQ.AQQueue;
-import oracle.AQ.AQSession;
+import com.example.configuration.OciConfiguration;
+import com.example.transactionalqueue.service.AQDequeueService;
+import com.example.transactionalqueue.service.AQEnqueueService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.stereotype.Controller;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Objects;
+import javax.sql.DataSource;
+import java.math.BigDecimal;
 
+/**
+ * This demo illustrates how to use Oracle Advanced Queues to send and receive events within a transaction.
+ *
+ * @author Loïc Lefèvre
+ * @see <a href="https://docs.oracle.com/en/database/oracle/oracle-database/19/adque/aq-introduction.html#GUID-95868022-ECDA-4685-9D0A-52ED7663C84B">Advanced Queuing</a>
+ */
 @SpringBootApplication(scanBasePackages = "com.example")
 @EnableAsync
-@Controller
 public class TransactionalQueueApplication implements CommandLineRunner {
 	private static final Logger LOG = LoggerFactory.getLogger(TransactionalQueueApplication.class);
 
 	@Autowired
-	private JdbcTemplate jdbcTemplate;
+	private AQEnqueueService aqEnqueueService;
 
 	@Autowired
-	private AQSession aqSessionForEnqueue;
+	private DataSource dataSource;
+
+	@Autowired
+	private OciConfiguration ociConfiguration;
+
+	@Value("${aq.dequeue.tasks}")
+	private int tasksNumber;
+
+	@Autowired
+	private TaskExecutor myTasksExecutor;
+
+	@EventListener(ApplicationReadyEvent.class)
+	public void startDequeueServices() {
+		for (int i = 1; i <= tasksNumber; i++) {
+			AQDequeueService dequeueTask = new AQDequeueService(ociConfiguration,dataSource);
+			myTasksExecutor.execute(dequeueTask);
+		}
+		LOG.info("{} dequeue task(s) started", tasksNumber);
+	}
 
 	@Override
 	public void run(String... args) throws Exception {
 		LOG.info("=".repeat(126));
 
-		// Connect to the database using the connection pool
-		try (Connection connection = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection()) {
-			try {
-				AQQueue queue = aqSessionForEnqueue.getQueue("DEMOS", "AQ_NOTIFICATIONS_QUEUE");
-
-				AQMessage message = queue.createMessage();
-				String json = "{\"test\": 42}";
-				message.getRawPayload().setStream(json.getBytes(),json.getBytes().length);
-
-				AQEnqueueOption option = new AQEnqueueOption();
-				queue.enqueue(option, message);
-				connection.commit();
-
-/*				AQDequeueOption dequeueOption = new AQDequeueOption();
-
-				AQMessage newMessage = queue.dequeue(dequeueOption);
-				connection.commit();
-
-				String newJSON = new String(newMessage.getRawPayload().getBytes());
-
-				LOG.info("Received: {}",newJSON); */
-			}
-			catch(SQLException sqle) {
-				connection.rollback();
-			}
-			finally {
-				if(aqSessionForEnqueue != null) {
-					aqSessionForEnqueue.close();
-				}
-			}
+		// sending 100 events
+		for (int i = 1; i <= 100; i++) {
+			aqEnqueueService.sendJSONEventInTransaction("AQ_NOTIFICATIONS_QUEUE", new BigDecimal(i));
 		}
 	}
 
 	public static void main(String[] args) {
-		System.setProperty("aq.drivers","oracle.AQ.AQOracleDriver");
+		System.setProperty("aq.drivers", "oracle.AQ.AQOracleDriver");
 		SpringApplication.run(TransactionalQueueApplication.class, args);
 		LOG.info("=".repeat(126));
 	}

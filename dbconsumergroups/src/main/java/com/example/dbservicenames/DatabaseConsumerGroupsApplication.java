@@ -61,6 +61,7 @@ public class DatabaseConsumerGroupsApplication implements CommandLineRunner {
 			case "JDCS" -> LOG.info("Connected to an Autonomous JSON Database");
 			case "OLTP" -> LOG.info("Connected to an Autonomous Transaction Processing Database");
 			case "DWCS" -> LOG.info("Connected to an Autonomous Data Warehouse");
+			default -> throw new IllegalStateException("Unknown instance type: " + instanceType);
 		}
 
 		String consumerGroup = Objects.requireNonNull(jdbcTemplate.queryForObject("""

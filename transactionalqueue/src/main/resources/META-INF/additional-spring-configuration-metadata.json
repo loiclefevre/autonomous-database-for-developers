@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "aq.dequeue.tasks",
+      "type": "java.lang.String",
+      "description": "Description for aq.dequeue.tasks."
+  }
+] }

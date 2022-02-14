@@ -1,75 +1,79 @@
 package com.example.transactionalqueue.service;
 
+import com.example.configuration.OciConfiguration;
 import oracle.AQ.AQDequeueOption;
+import oracle.AQ.AQDriverManager;
 import oracle.AQ.AQException;
 import oracle.AQ.AQMessage;
 import oracle.AQ.AQOracleSession;
 import oracle.AQ.AQQueue;
-import oracle.AQ.AQSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.event.EventListener;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+/**
+ * Concurrently dequeue events.
+ *
+ * @author Loïc Lefèvre
+ */
 @Component
 public class AQDequeueService implements Runnable {
 	private static final Logger LOG = LoggerFactory.getLogger(AQDequeueService.class);
 
-	@Autowired
-	private TaskExecutor taskExecutor;
+	private OciConfiguration ociConfiguration;
 
-	@Autowired
-	private ApplicationContext applicationContext;
+	private AQOracleSession aqSessionForDequeue;
 
-	@Autowired
-	private AQSession aqSessionForDequeue;
-
-	@EventListener(ApplicationReadyEvent.class)
-	public void start() {
-		AQDequeueService dequeueTask = applicationContext.getBean(AQDequeueService.class);
-		taskExecutor.execute(dequeueTask );
-		LOG.info("Dequeue task started");
+	public AQDequeueService(OciConfiguration ociConfiguration, DataSource dataSource) {
+		this.ociConfiguration = ociConfiguration;
+		try {
+			Connection connection = dataSource.getConnection();
+			this.aqSessionForDequeue = (AQOracleSession)AQDriverManager.createAQSession(connection.unwrap(oracle.jdbc.OracleConnection.class));
+		}
+		catch(SQLException | AQException e) {
+			LOG.error("Creating dequeue service", e);
+		}
 	}
 
 	@Override
 	public void run() {
 		try {
-			final Connection connection = ((AQOracleSession) aqSessionForDequeue).getDBConnection();
-			final AQQueue queue = aqSessionForDequeue.getQueue("DEMOS", "AQ_NOTIFICATIONS_QUEUE");
-			final AQDequeueOption dequeueOption = new AQDequeueOption();
+			final AQQueue queue = aqSessionForDequeue.getQueue(ociConfiguration.getDatabaseUsername(), "AQ_NOTIFICATIONS_QUEUE");
 
 			while (true) {
-				try {
-					AQMessage newMessage = queue.dequeue(dequeueOption);
-					connection.commit();
-
-					LOG.warn("Received message: {}", new String(newMessage.getRawPayload().getBytes()));
-				}
-				catch (SQLException sqle) {
-					try {
-						connection.rollback();
-					}
-					catch (SQLException ignored) {
-					}
-				}
+				LOG.warn("Thread {} received message: {}",
+						Thread.currentThread().getName(), getMessage(queue, new AQDequeueOption()));
 
 				Thread.yield();
 			}
 		}
-		catch (AQException aqe) {
-			LOG.error("Dequeuing!", aqe);
+		catch (AQException | SQLException e) {
+			LOG.error("While dequeuing!", e);
 		}
 		finally {
-			if(aqSessionForDequeue != null) {
+			if (aqSessionForDequeue != null) {
 				aqSessionForDequeue.close();
 			}
+		}
+	}
+
+	String getMessage(AQQueue queue, AQDequeueOption dequeueOption) throws SQLException {
+		try {
+			final AQMessage event = queue.dequeue(dequeueOption);
+
+			aqSessionForDequeue.getDBConnection().commit();
+
+			return new String(event.getRawPayload().getBytes());
+		}
+		catch (AQException aqe) {
+			try { aqSessionForDequeue.getDBConnection().rollback(); }
+			catch( AQException ignored ) {}
+
+			throw new SQLException(aqe);
 		}
 	}
 }
