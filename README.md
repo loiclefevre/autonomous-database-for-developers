@@ -12,6 +12,7 @@ The following demos are presented in a logical order so it is preferable startin
 - [Demo 5 - Generating AWR and ADDM reports in order to analyze performance](./awrreport)
 - [Demo 6 - Using Advanced Queuing (transactional queues) to notify application with events](./transactionalqueue)
 - [Demo 7 - Working with an Autonomous JSON database using `MongoRepository`](./mongodbapi)
+- [Demo 8 - Auto-REST-enable tables (+loading, OAuth...)](./autorest)
 
 Each demo is a Maven module depending upon the `common` module.
 

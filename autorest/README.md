@@ -1,4 +1,4 @@
-# Demo 8 - Auto-REST-enable tables
+# Demo 8 - Auto-REST-enable tables (+loading, OAuth...)
 `module autorest`
 - Shows how to enable REST access to database tables
 - Using created endpoints, shows how to load CSV data from GitHub hosted data files
