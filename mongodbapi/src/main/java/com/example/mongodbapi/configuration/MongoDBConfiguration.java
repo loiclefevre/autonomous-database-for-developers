@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 @Configuration
 public class MongoDBConfiguration {
@@ -25,10 +26,13 @@ public class MongoDBConfiguration {
 	private String databasePassword;
 
 	public @Bean MongoClient mongoClient() {
-		final String uri = String.format("mongodb://%s:%s@%s.adb.%s.oraclecloudapps.com:27016/%s?authMechanism=PLAIN&authSource=$external&ssl=true&retryWrites=false",
+		final String uri = String.format("mongodb://%s:%s@%s.adb.%s.oraclecloudapps.com:27016/?authMechanism=PLAIN&authSource=$external&ssl=true&retryWrites=false",
 				databaseUsername, databasePassword,
-				databaseName.replaceAll("_", "-"), region,
-				databaseUsername);
+				databaseName.replaceAll("_", "-"), region );
 		return MongoClients.create(uri);
+	}
+
+	public @Bean MongoTemplate mongoTemplate() {
+		return new MongoTemplate(mongoClient(), databaseUsername);
 	}
 }

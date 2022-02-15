@@ -29,6 +29,7 @@ public class MongoDBAPIApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		LOG.info("=".repeat(126));
+		LOG.warn("Oracle Database API for MongoDB: easy way!");
 
 		Snippet snippet = new Snippet("alert('test');", "javascript");
 		Snippet saved = snippetRepository.insert(snippet);
@@ -39,6 +40,8 @@ public class MongoDBAPIApplication implements CommandLineRunner {
 		for (Snippet s : snippetRepository.findByLanguage("javascript").subList(1, 3)) {
 			LOG.info("JavaScript snippet: {}", s);
 		}
+
+		LOG.info("=".repeat(126));
 
 		LOG.warn("Doing some JSON data analytics using SQL:");
 
