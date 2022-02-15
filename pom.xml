@@ -27,6 +27,7 @@
         <module>dbconsumergroups</module>
         <module>transactionalqueue</module>
         <module>mongodbapi</module>
+        <module>autorest</module>
     </modules>
 
     <properties>

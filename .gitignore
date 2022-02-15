@@ -19,3 +19,4 @@ buildNumber.properties
 /dbconsumergroups/dbconsumergroups.iml
 /transactionalqueue/transactionalqueue.iml
 /mongodbapi/mongodbapi.iml
+/autorest/autorest.iml
