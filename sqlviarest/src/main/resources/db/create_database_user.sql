@@ -9,7 +9,8 @@ BEGIN
     execute immediate 'alter user ' || username || ' quota unlimited on data';
 
     -- Grant Autonomous Database roles, create session, SODA API, Property Graph, Oracle Machine Learning, Alter session, Select all objects from catalog
-    execute immediate 'grant dwrole, create session, soda_app, graph_developer, oml_developer, alter session, select_catalog_role, resource, connect to ' || username;
+    execute immediate 'grant dwrole, resource, connect, create session, soda_app, oml_developer, alter session, select_catalog_role to ' || username || ' with admin option';
+    execute immediate 'grant graph_developer to ' || username;
 
     -- Privileges to connect to Property Graph and Oracle Machine Learning GUIs
     execute immediate 'alter user ' || username || ' grant connect through GRAPH$PROXY_USER';
