@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cglib.core.Local;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,6 +19,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -89,7 +91,7 @@ public class GeoJSONApplication implements CommandLineRunner {
 		}
 
 		// GPS coordinates from https://epsg.io/map#srs=4326&x=5.380583&y=43.280427&z=12&layer=streets
-		// Using EPSG:4326 (aka SRID for Spatial Reference system ID)
+		// Using EPSG:4326 (aka SRID for Spatial Reference system ID) with Ellipsoid WGS84 earth model.
 		// EPSG: European Petroleum Survey Group
 		// For instance, Google Maps uses EPSG:3857
 		final double marseilleLongitude = -5.380583d;
@@ -113,6 +115,23 @@ public class GeoJSONApplication implements CommandLineRunner {
 		final String countryISO3Code = jdbcTemplate.queryForObject(sql, String.class);
 
 		LOG.info("Country code (ISO3) containing Marseille: {}", countryISO3Code);
+
+		LOG.info("=".repeat(126));
+
+		final double parisLongitude = -2.346941d;
+		final double parisLatitude = 48.858884d;
+
+		final BigDecimal distanceFromParis = jdbcTemplate.queryForObject(String.format( Locale.US, """
+					SELECT ROUND( SDO_GEOM.SDO_DISTANCE(
+							  sdo_util.from_geojson('{"type": "Point", "coordinates": [%f, %f]}'),
+							  sdo_util.from_geojson('{"type": "Point", "coordinates": [%f, %f]}'),
+							  0.01, 'unit=KM'
+						   ), 2)
+					  FROM dual
+				""", marseilleLongitude, marseilleLatitude,
+				parisLongitude, parisLatitude), BigDecimal.class);
+
+		LOG.info("The distance between Marseille and Paris is: {} KM", distanceFromParis);
 	}
 
 	/**
