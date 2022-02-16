@@ -20,3 +20,4 @@ buildNumber.properties
 /transactionalqueue/transactionalqueue.iml
 /mongodbapi/mongodbapi.iml
 /autorest/autorest.iml
+/geojson/geojson.iml

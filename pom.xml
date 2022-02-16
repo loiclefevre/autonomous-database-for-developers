@@ -28,6 +28,7 @@
         <module>transactionalqueue</module>
         <module>mongodbapi</module>
         <module>autorest</module>
+        <module>geojson</module>
     </modules>
 
     <properties>

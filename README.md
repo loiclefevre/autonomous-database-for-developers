@@ -13,6 +13,7 @@ The following demos are presented in a logical order so it is preferable startin
 - [Demo 6 - Using Advanced Queuing (transactional queues) to notify application with events](./transactionalqueue)
 - [Demo 7 - Working with an Autonomous JSON database using `MongoRepository`](./mongodbapi)
 - [Demo 8 - Auto-REST-enable tables (+loading, OAuth...)](./autorest)
+- [Demo 9 - Spatial analytics with GeoJSON](./geojson)
 
 Each demo is a Maven module depending upon the `common` module.
 
@@ -38,14 +39,12 @@ Apart an Autonomous Database, you'll need a JDK 17 and Maven 3.X.
 
 ### Coming next...
 In no particular order yet:
-- Spatial queries over GeoJSON data
 - SQL query joining JSON and Relational data together
-- AutoREST for tables/schemas access
 - Understanding execution plans and session statistics
 - Application Continuity
 - Using Blockchain/Immutables tables
 - Understanding the benefits for developers of the Autonomous database underlying infrastructure: Exadata
-- Reactive R2DBC driver
+- Reactive R2DBC driver + UCP driver
 - Automatic partitioning unleashed
 - Automatic indexing unleashed
 - Applied Machine Learning on JSON data

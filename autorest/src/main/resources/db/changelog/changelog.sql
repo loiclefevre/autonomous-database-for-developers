@@ -56,7 +56,6 @@ BEGIN
             p_object  => 'REGIONS',
             p_object_type => 'TABLE',
             p_object_alias => 'regions',
-            -- DON'T DO THAT IN PRODUCTION!
             p_auto_rest_auth => FALSE
         );
 
@@ -66,7 +65,6 @@ BEGIN
             p_object  => 'COUNTRIES',
             p_object_type => 'TABLE',
             p_object_alias => 'countries',
-            -- DON'T DO THAT IN PRODUCTION!
             p_auto_rest_auth => FALSE
         );
 
