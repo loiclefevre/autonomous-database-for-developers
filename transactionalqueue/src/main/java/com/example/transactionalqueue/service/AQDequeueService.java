@@ -87,6 +87,13 @@ public class AQDequeueService implements Runnable {
 			}
 			finally {
 				// whatever happens stop the queue
+
+				// and rollback before!
+				try {
+					aqSessionForDequeue.getDBConnection().rollback();
+				}
+				catch(SQLException ignored) {}
+
 				LOG.warn("Stopping queue...");
 				queue.stopEnqueue(false);
 				queue.stopDequeue(false);

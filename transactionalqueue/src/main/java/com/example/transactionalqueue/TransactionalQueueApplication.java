@@ -98,8 +98,6 @@ public class TransactionalQueueApplication implements CommandLineRunner {
 			aqDequeueServiceTask.stop();
 		}
 
-
-
 		try {
 			LOG.info("Shutdown hook sleeping for 5 seconds...");
 			Thread.sleep(5000L);
