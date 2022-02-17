@@ -118,9 +118,7 @@ public class AQDequeueService implements Runnable {
 			catch (AQException ignored) {
 			}
 
-			//throw new SQLException(aqe);
+			throw new SQLException(aqe);
 		}
-
-		return null;
 	}
 }
