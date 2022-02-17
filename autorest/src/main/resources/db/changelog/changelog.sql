@@ -39,7 +39,7 @@ DECLARE
     l_patterns  OWA.VC_ARR;
 BEGIN
     l_roles(1)   := 'SQL Developer';
-    l_patterns(1) := '/*';
+    l_patterns(1) := '/secret_data/*';
     ORDS.DEFINE_PRIVILEGE(
             p_privilege_name => 'rest_privilege',
             p_roles => l_roles,
