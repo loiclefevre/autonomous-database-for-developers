@@ -112,5 +112,7 @@ public class AQDequeueService implements Runnable {
 
 			//throw new SQLException(aqe);
 		}
+
+		return null;
 	}
 }
