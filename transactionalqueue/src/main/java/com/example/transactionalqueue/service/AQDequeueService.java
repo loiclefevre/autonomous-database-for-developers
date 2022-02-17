@@ -25,6 +25,7 @@ public class AQDequeueService implements Runnable {
 	private static final Logger LOG = LoggerFactory.getLogger(AQDequeueService.class);
 
 	private static final int AQ_TIMEOUT_ERROR_CODE = 25228;
+	private static final int AQ_DEQUEUE_DISABLED = 25226;
 
 	private OciConfiguration ociConfiguration;
 
@@ -74,7 +75,8 @@ public class AQDequeueService implements Runnable {
 						}
 					}
 					catch (AQException e) {
-						if(e.getErrorCode() != AQ_TIMEOUT_ERROR_CODE) {
+						if(e.getErrorCode() != AQ_TIMEOUT_ERROR_CODE &&
+						e.getErrorCode() != AQ_DEQUEUE_DISABLED) {
 							throw e;
 						}
 					}

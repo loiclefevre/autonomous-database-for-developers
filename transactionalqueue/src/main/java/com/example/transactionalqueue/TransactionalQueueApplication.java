@@ -58,11 +58,10 @@ public class TransactionalQueueApplication implements CommandLineRunner {
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void startDequeueServices() {
-		try {
-			latch.await();
-		}
-		catch (InterruptedException ignored) {
-		}
+		// wait until enqueue process started (it will also start the queue in case it is not started,
+		// e.g. in the case of multiple runs)
+		try { latch.await(); }
+		catch (InterruptedException ignored) {}
 
 		for (int i = 1; i <= tasksNumber; i++) {
 			AQDequeueService dequeueTask = new AQDequeueService(ociConfiguration, dataSource);
@@ -82,7 +81,7 @@ public class TransactionalQueueApplication implements CommandLineRunner {
 					i == 50 ? HIGH_PRIORITY : DEFAULT_PRIORITY);
 
 			if (i == 1) {
-				// send notification to let AQDequeueServices to start properly
+				// send notification to let AQDequeueServices start properly
 				latch.countDown();
 			}
 		}

@@ -31,6 +31,8 @@ public class AQEnqueueService {
 	public static final int HIGH_PRIORITY = -1;
 	public static final int DEFAULT_PRIORITY = 0;
 
+	private static final int AQ_ENQUEUE_DISABLED = 25207;
+
 	private OciConfiguration ociConfiguration;
 
 	private DataSource dataSource;
@@ -63,7 +65,7 @@ public class AQEnqueueService {
 					queue.enqueue(enqueueOption, message);
 				}
 				catch (AQOracleSQLException aqsqle) {
-					if (aqsqle.getErrorCode() == 25207) {
+					if (aqsqle.getErrorCode() == AQ_ENQUEUE_DISABLED) {
 						// queue not started, start it...
 						queue.startEnqueue();
 						queue.startDequeue();
