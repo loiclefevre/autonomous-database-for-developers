@@ -66,6 +66,8 @@ public class AQEnqueueService {
 					if (aqsqle.getErrorCode() == 25207) {
 						// queue not started, start it...
 						queue.startEnqueue();
+						queue.startDequeue();
+
 						// ...and retry!
 						queue.enqueue(enqueueOption, message);
 					}
