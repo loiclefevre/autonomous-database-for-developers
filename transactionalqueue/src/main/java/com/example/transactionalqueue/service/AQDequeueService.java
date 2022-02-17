@@ -39,6 +39,8 @@ public class AQDequeueService implements Runnable {
 		}
 	}
 
+
+
 	@Override
 	public void run() {
 		try {
@@ -60,6 +62,7 @@ public class AQDequeueService implements Runnable {
 			}
 			finally {
 				// whatever happens stop the queue
+				LOG.warn("Stopping queue...");
 				queue.stop(false);
 			}
 		}
@@ -68,6 +71,7 @@ public class AQDequeueService implements Runnable {
 		}
 		finally {
 			if (aqSessionForDequeue != null) {
+				LOG.warn("Closing session...");
 				aqSessionForDequeue.close();
 			}
 		}

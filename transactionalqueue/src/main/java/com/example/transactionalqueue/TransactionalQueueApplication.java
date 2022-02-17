@@ -18,6 +18,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 import java.math.BigDecimal;
+import java.util.concurrent.TimeUnit;
 
 import static com.example.transactionalqueue.service.AQEnqueueService.DEFAULT_PRIORITY;
 import static com.example.transactionalqueue.service.AQEnqueueService.HIGH_PRIORITY;
@@ -73,14 +74,14 @@ public class TransactionalQueueApplication implements CommandLineRunner {
 	 */
 	@PreDestroy
 	public void onExit() {
-		myTasksExecutor.shutdown();
-
 		try {
-			Thread.sleep(4000L);
+			boolean gracefulShutdown = myTasksExecutor.getThreadPoolExecutor().awaitTermination(4, TimeUnit.SECONDS);
 		}
 		catch (InterruptedException ignored) {
 		}
 		LOG.info("AQDequeue services stopped.");
+
+		myTasksExecutor.shutdown();
 	}
 
 	public static void main(String[] args) {
