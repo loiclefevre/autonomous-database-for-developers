@@ -94,10 +94,11 @@ public class AQDequeueService implements Runnable {
 				}
 				catch(SQLException ignored) {}
 
-				LOG.warn("Stopping queue...");
-				queue.stopEnqueue(false);
-				queue.stopDequeue(false);
-				LOG.warn("Stopping queue done!");
+				try {
+					queue.stopEnqueue(false);
+					queue.stopDequeue(false);
+				}
+				catch(AQException ignored) {}
 			}
 		}
 		catch (AQException | SQLException e) {
