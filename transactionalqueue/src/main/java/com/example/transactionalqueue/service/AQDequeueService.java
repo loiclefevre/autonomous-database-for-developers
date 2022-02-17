@@ -32,9 +32,9 @@ public class AQDequeueService implements Runnable {
 		this.ociConfiguration = ociConfiguration;
 		try {
 			Connection connection = dataSource.getConnection();
-			this.aqSessionForDequeue = (AQOracleSession)AQDriverManager.createAQSession(connection.unwrap(oracle.jdbc.OracleConnection.class));
+			this.aqSessionForDequeue = (AQOracleSession) AQDriverManager.createAQSession(connection.unwrap(oracle.jdbc.OracleConnection.class));
 		}
-		catch(SQLException | AQException e) {
+		catch (SQLException | AQException e) {
 			LOG.error("Creating dequeue service", e);
 		}
 	}
@@ -44,16 +44,23 @@ public class AQDequeueService implements Runnable {
 		try {
 			final AQQueue queue = aqSessionForDequeue.getQueue(ociConfiguration.getDatabaseUsername(), "AQ_NOTIFICATIONS_QUEUE");
 
-			while (true) {
-				final Event event = getMessage(queue, new AQDequeueOption());
+			try {
+				while (true) {
+					final Event event = getMessage(queue, new AQDequeueOption());
 
-				if(event.priority == AQEnqueueService.HIGH_PRIORITY) {
-					LOG.warn("Thread {} received HIGH priority message: {}", Thread.currentThread().getName(), event.message() );
-				} else {
-					LOG.warn("Thread {} received message: {}", Thread.currentThread().getName(), event.message() );
+					if (event.priority == AQEnqueueService.HIGH_PRIORITY) {
+						LOG.warn("Thread {} received HIGH priority message: {}", Thread.currentThread().getName(), event.message());
+					}
+					else {
+						LOG.warn("Thread {} received message: {}", Thread.currentThread().getName(), event.message());
+					}
+
+					Thread.yield();
 				}
-
-				Thread.yield();
+			}
+			finally {
+				// whatever happens stop the queue
+				queue.stop(false);
 			}
 		}
 		catch (AQException | SQLException e) {
@@ -77,8 +84,11 @@ public class AQDequeueService implements Runnable {
 			return new Event(new String(event.getRawPayload().getBytes()), event.getMessageProperty().getPriority());
 		}
 		catch (AQException aqe) {
-			try { aqSessionForDequeue.getDBConnection().rollback(); }
-			catch( AQException ignored ) {}
+			try {
+				aqSessionForDequeue.getDBConnection().rollback();
+			}
+			catch (AQException ignored) {
+			}
 
 			throw new SQLException(aqe);
 		}

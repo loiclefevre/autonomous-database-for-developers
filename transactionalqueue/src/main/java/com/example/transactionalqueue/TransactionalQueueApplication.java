@@ -12,9 +12,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 import java.math.BigDecimal;
 
@@ -45,7 +46,7 @@ public class TransactionalQueueApplication implements CommandLineRunner {
 	private int tasksNumber;
 
 	@Autowired
-	private TaskExecutor myTasksExecutor;
+	private ThreadPoolTaskExecutor myTasksExecutor;
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void startDequeueServices() {
@@ -65,6 +66,14 @@ public class TransactionalQueueApplication implements CommandLineRunner {
 			aqEnqueueService.sendJSONEventInTransaction("AQ_NOTIFICATIONS_QUEUE", new BigDecimal(i),
 					i == 50 ? HIGH_PRIORITY : DEFAULT_PRIORITY );
 		}
+	}
+
+	/**
+	 * Stops AQDequeueServices on application exit.
+	 */
+	@PreDestroy
+	public void onExit() {
+		myTasksExecutor.shutdown();
 	}
 
 	public static void main(String[] args) {

@@ -3,7 +3,6 @@ package com.example.transactionalqueue.concurrent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 /**
@@ -17,7 +16,7 @@ public class ThreadPoolConfiguration {
 	public int tasksNumber;
 
 	@Bean(name = "myTasksExecutor")
-	public TaskExecutor taskExecutor() {
+	public ThreadPoolTaskExecutor taskExecutor() {
 		final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 		executor.setCorePoolSize(tasksNumber);
 		executor.setMaxPoolSize(tasksNumber * 2);

@@ -21,3 +21,4 @@ buildNumber.properties
 /mongodbapi/mongodbapi.iml
 /autorest/autorest.iml
 /geojson/geojson.iml
+/relationaljson/relationaljson.iml

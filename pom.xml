@@ -29,6 +29,7 @@
         <module>mongodbapi</module>
         <module>autorest</module>
         <module>geojson</module>
+        <module>relationaljson</module>
     </modules>
 
     <properties>

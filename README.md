@@ -15,6 +15,7 @@ The following demos are presented in a logical order so it is preferable startin
 - [Demo 7 - Working with an Autonomous JSON database using `MongoRepository`](./mongodbapi)
 - [Demo 8 - Auto-REST-enable tables (+loading, OAuth...)](./autorest)
 - [Demo 9 - Spatial analytics with GeoJSON](./geojson)
+- [Demo 10 - Working with JSON and Relational data together](./relationaljson)
 
 Each demo is a Maven module depending upon the `common` module.
 
@@ -40,7 +41,6 @@ Apart an Autonomous Database, you'll need a JDK 17 and Maven 3.X.
 
 ### Coming next...
 In no particular order yet:
-- SQL query joining JSON and Relational data together
 - Understanding execution plans and session statistics
 - Application Continuity
 - Using Blockchain/Immutables tables
