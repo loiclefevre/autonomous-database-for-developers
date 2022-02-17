@@ -43,6 +43,7 @@ public class AQDequeueService implements Runnable {
 
 	public synchronized void stop() {
 		LOG.warn("Stop requested!");
+		currentThread.interrupt();
 		running = false;
 	}
 
@@ -50,8 +51,12 @@ public class AQDequeueService implements Runnable {
 		return running;
 	}
 
+	private Thread currentThread;
+
 	@Override
 	public void run() {
+		currentThread = Thread.currentThread();
+
 		try {
 			final AQQueue queue = aqSessionForDequeue.getQueue(ociConfiguration.getDatabaseUsername(), "AQ_NOTIFICATIONS_QUEUE");
 
