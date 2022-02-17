@@ -18,6 +18,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 import java.math.BigDecimal;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static com.example.transactionalqueue.service.AQEnqueueService.DEFAULT_PRIORITY;
@@ -48,6 +49,8 @@ public class TransactionalQueueApplication implements CommandLineRunner {
 
 	@Autowired
 	private ThreadPoolTaskExecutor myTasksExecutor;
+
+	private CountDownLatch latch = new CountDownLatch(1);
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void startDequeueServices() {

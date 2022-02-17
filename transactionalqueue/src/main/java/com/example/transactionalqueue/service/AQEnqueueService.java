@@ -6,6 +6,7 @@ import oracle.AQ.AQEnqueueOption;
 import oracle.AQ.AQException;
 import oracle.AQ.AQMessage;
 import oracle.AQ.AQMessageProperty;
+import oracle.AQ.AQOracleSQLException;
 import oracle.AQ.AQQueue;
 import oracle.AQ.AQSession;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Locale;
@@ -46,7 +48,7 @@ public class AQEnqueueService {
 				final AQEnqueueOption enqueueOption = new AQEnqueueOption();
 
 				final AQMessage message = queue.createMessage();
-				final AQMessageProperty messageProperty =new AQMessageProperty();
+				final AQMessageProperty messageProperty = new AQMessageProperty();
 				// 0: default priority
 				// > 0 : lower priority
 				// < 0 : higher priority
@@ -57,7 +59,17 @@ public class AQEnqueueService {
 						{"order": {"amount": %.2f} }""", orderAmount);
 				message.getRawPayload().setStream(jsonEvent.getBytes(), jsonEvent.getBytes().length);
 
-				queue.enqueue(enqueueOption, message);
+				try {
+					queue.enqueue(enqueueOption, message);
+				}
+				catch (AQOracleSQLException aqsqle) {
+					if (aqsqle.getErrorCode() == 25207) {
+						// queue not started, start it...
+						queue.startEnqueue();
+						// ...and retry!
+						queue.enqueue(enqueueOption, message);
+					}
+				}
 
 				connection.commit();
 			}
