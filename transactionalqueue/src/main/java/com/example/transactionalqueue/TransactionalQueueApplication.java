@@ -65,7 +65,7 @@ public class TransactionalQueueApplication implements CommandLineRunner {
 		}
 
 		for (int i = 1; i <= tasksNumber; i++) {
-			AQDequeueService dequeueTask = new AQDequeueService(ociConfiguration,dataSource);
+			AQDequeueService dequeueTask = new AQDequeueService(ociConfiguration, dataSource);
 			aqDequeueServiceTasks.add(dequeueTask);
 			myTasksExecutor.execute(dequeueTask);
 		}
@@ -79,9 +79,9 @@ public class TransactionalQueueApplication implements CommandLineRunner {
 		// sending 100 events
 		for (int i = 1; i <= 100; i++) {
 			aqEnqueueService.sendJSONEventInTransaction("AQ_NOTIFICATIONS_QUEUE", new BigDecimal(i),
-					i == 50 ? HIGH_PRIORITY : DEFAULT_PRIORITY );
+					i == 50 ? HIGH_PRIORITY : DEFAULT_PRIORITY);
 
-			if(i == 1) {
+			if (i == 1) {
 				// send notification to let AQDequeueServices to start properly
 				latch.countDown();
 			}
@@ -93,11 +93,18 @@ public class TransactionalQueueApplication implements CommandLineRunner {
 	 */
 	@PreDestroy
 	public void onExit() {
-		for(AQDequeueService aqDequeueServiceTask:aqDequeueServiceTasks) {
+		LOG.info("Starting shutdown hook...");
+		for (AQDequeueService aqDequeueServiceTask : aqDequeueServiceTasks) {
 			aqDequeueServiceTask.stop();
 		}
 
+
+
 		try {
+			LOG.info("Shutdown hook sleeping for 5 seconds...");
+			Thread.sleep(5000L);
+
+			LOG.info("Now requesting thread pool executor to stop...");
 			boolean gracefulShutdown = myTasksExecutor.getThreadPoolExecutor().awaitTermination(4, TimeUnit.SECONDS);
 		}
 		catch (InterruptedException ignored) {
