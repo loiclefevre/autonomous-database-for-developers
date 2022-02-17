@@ -39,10 +39,14 @@ public class AQDequeueService implements Runnable {
 		}
 	}
 
-	private volatile boolean running = true;
+	private boolean running = true;
 
-	public void stop() {
+	public synchronized void stop() {
 		running = false;
+	}
+
+	private synchronized boolean isRunning() {
+		return running;
 	}
 
 	@Override
@@ -51,7 +55,7 @@ public class AQDequeueService implements Runnable {
 			final AQQueue queue = aqSessionForDequeue.getQueue(ociConfiguration.getDatabaseUsername(), "AQ_NOTIFICATIONS_QUEUE");
 
 			try {
-				while (running) {
+				while (isRunning()) {
 					final Event event = getMessage(queue, new AQDequeueOption());
 
 					if (event.priority == AQEnqueueService.HIGH_PRIORITY) {
