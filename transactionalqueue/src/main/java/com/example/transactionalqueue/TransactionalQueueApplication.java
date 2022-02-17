@@ -74,6 +74,13 @@ public class TransactionalQueueApplication implements CommandLineRunner {
 	@PreDestroy
 	public void onExit() {
 		myTasksExecutor.shutdown();
+
+		try {
+			Thread.sleep(4000L);
+		}
+		catch (InterruptedException ignored) {
+		}
+		LOG.info("AQDequeue services stopped.");
 	}
 
 	public static void main(String[] args) {
