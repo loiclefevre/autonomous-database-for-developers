@@ -93,21 +93,17 @@ public class TransactionalQueueApplication implements CommandLineRunner {
 	 */
 	@PreDestroy
 	public void onExit() {
-		LOG.info("Starting shutdown hook...");
+		LOG.info("Starting application cleanup...");
 		for (AQDequeueService aqDequeueServiceTask : aqDequeueServiceTasks) {
 			aqDequeueServiceTask.stop();
 		}
 
 		try {
-			LOG.info("Shutdown hook sleeping for 5 seconds...");
-			Thread.sleep(5000L);
-
-			LOG.info("Now requesting thread pool executor to stop...");
-			boolean gracefulShutdown = myTasksExecutor.getThreadPoolExecutor().awaitTermination(4, TimeUnit.SECONDS);
+			boolean gracefulShutdown = myTasksExecutor.getThreadPoolExecutor().awaitTermination(2, TimeUnit.SECONDS);
 		}
 		catch (InterruptedException ignored) {
 		}
-		LOG.info("AQDequeue services stopped.");
+		LOG.info("AQ Dequeue services stopped.");
 
 		myTasksExecutor.shutdown();
 	}

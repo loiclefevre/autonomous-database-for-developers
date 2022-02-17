@@ -44,26 +44,23 @@ public class AQDequeueService implements Runnable {
 	private boolean running = true;
 
 	public synchronized void stop() {
-		LOG.warn("Stop requested!");
-		//currentThread.interrupt();
 		running = false;
+		LOG.warn("Stop requested!");
 	}
 
 	private synchronized boolean isRunning() {
 		return running;
 	}
 
-	private Thread currentThread;
-
 	@Override
 	public void run() {
-		currentThread = Thread.currentThread();
-
 		try {
 			final AQQueue queue = aqSessionForDequeue.getQueue(ociConfiguration.getDatabaseUsername(), "AQ_NOTIFICATIONS_QUEUE");
 
-			AQDequeueOption dequeueOption = new AQDequeueOption();
-			dequeueOption.setWaitTime(1);
+			final AQDequeueOption dequeueOption = new AQDequeueOption();
+			// timeout after 2 seconds
+			dequeueOption.setWaitTime(2);
+
 			try {
 				while (isRunning()) {
 					try {
@@ -75,8 +72,6 @@ public class AQDequeueService implements Runnable {
 						else {
 							LOG.warn("Thread {} received message: {}", Thread.currentThread().getName(), event.message());
 						}
-
-						Thread.yield();
 					}
 					catch (AQException e) {
 						if(e.getErrorCode() != AQ_TIMEOUT_ERROR_CODE) {
@@ -106,7 +101,7 @@ public class AQDequeueService implements Runnable {
 		}
 		finally {
 			if (aqSessionForDequeue != null) {
-				LOG.warn("Closing session...");
+				LOG.info("Closing AQ session...");
 				aqSessionForDequeue.close();
 			}
 		}
