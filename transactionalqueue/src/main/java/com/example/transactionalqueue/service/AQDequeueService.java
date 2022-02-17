@@ -61,8 +61,11 @@ public class AQDequeueService implements Runnable {
 			final AQQueue queue = aqSessionForDequeue.getQueue(ociConfiguration.getDatabaseUsername(), "AQ_NOTIFICATIONS_QUEUE");
 
 			try {
+				AQDequeueOption dequeueOption = new AQDequeueOption();
+				dequeueOption.setWaitTime(1);
+
 				while (isRunning()) {
-					final Event event = getMessage(queue, new AQDequeueOption());
+					final Event event = getMessage(queue, dequeueOption);
 
 					if (event.priority == AQEnqueueService.HIGH_PRIORITY) {
 						LOG.warn("Thread {} received HIGH priority message: {}", Thread.currentThread().getName(), event.message());
