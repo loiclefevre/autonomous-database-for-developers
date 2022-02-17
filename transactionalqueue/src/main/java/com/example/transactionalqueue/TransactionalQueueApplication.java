@@ -18,6 +18,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -52,6 +54,8 @@ public class TransactionalQueueApplication implements CommandLineRunner {
 
 	private CountDownLatch latch = new CountDownLatch(1);
 
+	private List<AQDequeueService> aqDequeueServiceTasks = new ArrayList<>();
+
 	@EventListener(ApplicationReadyEvent.class)
 	public void startDequeueServices() {
 		try {
@@ -62,6 +66,7 @@ public class TransactionalQueueApplication implements CommandLineRunner {
 
 		for (int i = 1; i <= tasksNumber; i++) {
 			AQDequeueService dequeueTask = new AQDequeueService(ociConfiguration,dataSource);
+			aqDequeueServiceTasks.add(dequeueTask);
 			myTasksExecutor.execute(dequeueTask);
 		}
 		LOG.info("{} dequeue task(s) started", tasksNumber);
@@ -88,6 +93,10 @@ public class TransactionalQueueApplication implements CommandLineRunner {
 	 */
 	@PreDestroy
 	public void onExit() {
+		for(AQDequeueService aqDequeueServiceTask:aqDequeueServiceTasks) {
+			aqDequeueServiceTask.stop();
+		}
+
 		try {
 			boolean gracefulShutdown = myTasksExecutor.getThreadPoolExecutor().awaitTermination(4, TimeUnit.SECONDS);
 		}

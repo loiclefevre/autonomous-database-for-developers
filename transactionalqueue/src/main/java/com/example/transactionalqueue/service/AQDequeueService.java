@@ -39,7 +39,11 @@ public class AQDequeueService implements Runnable {
 		}
 	}
 
+	private volatile boolean running = true;
 
+	public void stop() {
+		running = false;
+	}
 
 	@Override
 	public void run() {
@@ -47,7 +51,7 @@ public class AQDequeueService implements Runnable {
 			final AQQueue queue = aqSessionForDequeue.getQueue(ociConfiguration.getDatabaseUsername(), "AQ_NOTIFICATIONS_QUEUE");
 
 			try {
-				while (true) {
+				while (running) {
 					final Event event = getMessage(queue, new AQDequeueOption());
 
 					if (event.priority == AQEnqueueService.HIGH_PRIORITY) {
@@ -63,7 +67,8 @@ public class AQDequeueService implements Runnable {
 			finally {
 				// whatever happens stop the queue
 				LOG.warn("Stopping queue...");
-				queue.stop(false);
+				queue.stopEnqueue(false);
+				queue.stopDequeue(false);
 			}
 		}
 		catch (AQException | SQLException e) {
