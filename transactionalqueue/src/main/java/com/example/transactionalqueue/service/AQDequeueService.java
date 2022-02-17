@@ -44,7 +44,7 @@ public class AQDequeueService implements Runnable {
 
 	public synchronized void stop() {
 		LOG.warn("Stop requested!");
-		currentThread.interrupt();
+		//currentThread.interrupt();
 		running = false;
 	}
 
