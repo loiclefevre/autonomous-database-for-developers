@@ -5,6 +5,7 @@ import oracle.AQ.AQDequeueOption;
 import oracle.AQ.AQDriverManager;
 import oracle.AQ.AQException;
 import oracle.AQ.AQMessage;
+import oracle.AQ.AQOracleSQLException;
 import oracle.AQ.AQOracleSession;
 import oracle.AQ.AQQueue;
 import org.slf4j.Logger;
@@ -76,6 +77,10 @@ public class AQDequeueService implements Runnable {
 
 					Thread.yield();
 				}
+			}
+			catch(AQOracleSQLException e) {
+				LOG.error("Interrupted?", e);
+				throw e;
 			}
 			finally {
 				// whatever happens stop the queue
