@@ -5,7 +5,6 @@ import oracle.AQ.AQDequeueOption;
 import oracle.AQ.AQDriverManager;
 import oracle.AQ.AQException;
 import oracle.AQ.AQMessage;
-import oracle.AQ.AQOracleSQLException;
 import oracle.AQ.AQOracleSession;
 import oracle.AQ.AQQueue;
 import org.slf4j.Logger;
@@ -24,6 +23,8 @@ import java.sql.SQLException;
 @Component
 public class AQDequeueService implements Runnable {
 	private static final Logger LOG = LoggerFactory.getLogger(AQDequeueService.class);
+
+	private static final int AQ_TIMEOUT_ERROR_CODE = 25228;
 
 	private OciConfiguration ociConfiguration;
 
@@ -61,26 +62,28 @@ public class AQDequeueService implements Runnable {
 		try {
 			final AQQueue queue = aqSessionForDequeue.getQueue(ociConfiguration.getDatabaseUsername(), "AQ_NOTIFICATIONS_QUEUE");
 
+			AQDequeueOption dequeueOption = new AQDequeueOption();
+			dequeueOption.setWaitTime(1);
 			try {
-				AQDequeueOption dequeueOption = new AQDequeueOption();
-				dequeueOption.setWaitTime(1);
-
 				while (isRunning()) {
-					final Event event = getMessage(queue, dequeueOption);
+					try {
+						final Event event = getMessage(queue, dequeueOption);
 
-					if (event.priority == AQEnqueueService.HIGH_PRIORITY) {
-						LOG.warn("Thread {} received HIGH priority message: {}", Thread.currentThread().getName(), event.message());
-					}
-					else {
-						LOG.warn("Thread {} received message: {}", Thread.currentThread().getName(), event.message());
-					}
+						if (event.priority == AQEnqueueService.HIGH_PRIORITY) {
+							LOG.warn("Thread {} received HIGH priority message: {}", Thread.currentThread().getName(), event.message());
+						}
+						else {
+							LOG.warn("Thread {} received message: {}", Thread.currentThread().getName(), event.message());
+						}
 
-					Thread.yield();
+						Thread.yield();
+					}
+					catch (AQException e) {
+						if(e.getErrorCode() != AQ_TIMEOUT_ERROR_CODE) {
+							throw e;
+						}
+					}
 				}
-			}
-			catch(AQOracleSQLException e) {
-				LOG.error("Interrupted?", e);
-				throw e;
 			}
 			finally {
 				// whatever happens stop the queue
@@ -103,7 +106,7 @@ public class AQDequeueService implements Runnable {
 
 	record Event(String message, int priority) {};
 
-	Event getMessage(AQQueue queue, AQDequeueOption dequeueOption) throws SQLException {
+	Event getMessage(AQQueue queue, AQDequeueOption dequeueOption) throws AQException, SQLException {
 		try {
 			final AQMessage event = queue.dequeue(dequeueOption);
 
@@ -118,7 +121,7 @@ public class AQDequeueService implements Runnable {
 			catch (AQException ignored) {
 			}
 
-			throw new SQLException(aqe);
+			throw aqe;
 		}
 	}
 }
