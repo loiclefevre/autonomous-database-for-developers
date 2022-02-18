@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>relationaljson</artifactId>
+    <artifactId>alwaysonapp</artifactId>
 
     <packaging>jar</packaging>
 
@@ -19,6 +19,17 @@
             <artifactId>common</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.oracle.database.ha</groupId>
+            <artifactId>simplefan</artifactId>
+            <version>19.13.0.0.1</version>
+        </dependency>
+        <!-- <dependency>
+            <groupId>com.oracle.database.ha</groupId>
+            <artifactId>ons</artifactId>
+            <version>19.13.0.0.1</version>
+        </dependency> -->
     </dependencies>
+
 
 </project>

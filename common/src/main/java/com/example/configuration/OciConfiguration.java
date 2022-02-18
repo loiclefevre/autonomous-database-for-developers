@@ -19,8 +19,8 @@ public class OciConfiguration {
 
 	// Primary Data Source configuration
 
-	@Value("${oci.tenant.database.service-name}")
-	private String databaseServiceName;
+	@Value("${oci.tenant.database.consumer-group}")
+	private String databaseConsumerGroup;
 
 	@Value("${oci.tenant.database.url}")
 	private String databaseUrl;
@@ -33,8 +33,8 @@ public class OciConfiguration {
 
 	// Secondary (ADMIN) Data Source configuration
 
-	@Value("${oci.tenant.database.admin-service-name}")
-	private String databaseAdminServiceName;
+	@Value("${oci.tenant.database.admin-consumer-group}")
+	private String databaseAdminConsumerGroup;
 
 	@Value("${oci.tenant.database.admin-url}")
 	private String databaseAdminUrl;
@@ -117,20 +117,20 @@ public class OciConfiguration {
 		this.databaseAdminPassword = databaseAdminPassword;
 	}
 
-	public String getDatabaseServiceName() {
-		return databaseServiceName;
+	public String getDatabaseConsumerGroup() {
+		return databaseConsumerGroup;
 	}
 
-	public void setDatabaseServiceName(String databaseServiceName) {
-		this.databaseServiceName = databaseServiceName;
+	public void setDatabaseConsumerGroup(String databaseConsumerGroup) {
+		this.databaseConsumerGroup = databaseConsumerGroup;
 	}
 
-	public String getDatabaseAdminServiceName() {
-		return databaseAdminServiceName;
+	public String getDatabaseAdminConsumerGroup() {
+		return databaseAdminConsumerGroup;
 	}
 
-	public void setDatabaseAdminServiceName(String databaseAdminServiceName) {
-		this.databaseAdminServiceName = databaseAdminServiceName;
+	public void setDatabaseAdminConsumerGroup(String databaseAdminConsumerGroup) {
+		this.databaseAdminConsumerGroup = databaseAdminConsumerGroup;
 	}
 
 	@Override
@@ -139,11 +139,11 @@ public class OciConfiguration {
 				"region='" + region + '\'' +
 				", databaseName='" + databaseName + '\'' +
 				", databaseSSLServerCertificateDistinguishedName='" + databaseSSLServerCertificateDistinguishedName + '\'' +
-				", databaseServiceName='" + databaseServiceName + '\'' +
+				", databaseServiceName='" + databaseConsumerGroup + '\'' +
 				", databaseUrl='" + databaseUrl + '\'' +
 				", databaseUsername='" + databaseUsername + '\'' +
 				", databasePassword='" + databasePassword + '\'' +
-				", databaseAdminServiceName='" + databaseAdminServiceName + '\'' +
+				", databaseAdminServiceName='" + databaseAdminConsumerGroup + '\'' +
 				", databaseAdminUrl='" + databaseAdminUrl + '\'' +
 				", databaseAdminUsername='" + databaseAdminUsername + '\'' +
 				", databaseAdminPassword='" + databaseAdminPassword + '\'' +

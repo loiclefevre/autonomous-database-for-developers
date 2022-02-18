@@ -30,6 +30,7 @@
         <module>autorest</module>
         <module>geojson</module>
         <module>relationaljson</module>
+        <module>alwaysonapp</module>
     </modules>
 
     <properties>
