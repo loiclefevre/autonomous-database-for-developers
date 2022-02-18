@@ -143,12 +143,19 @@ public class AlwaysOnApplication implements CommandLineRunner {
 							ps -> ps.setString(1, String.format("Hello %d!", ++number))
 					);
 					final long endTime = System.currentTimeMillis();
-					LOG.info("\t- Inserted 1 row in {}ms", endTime - startTime);
+					if(endTime - startTime > 200) {
+						LOG.warn("\t- Inserted 1 row in {}ms", endTime - startTime);
+					}
 				}
 			}
 		});
+
 		final long endTransactionTime = System.currentTimeMillis();
-		LOG.info("- Transaction with {} row(s) lasted {}ms", numberOfRows, endTransactionTime - startTransactionTime);
+		if(endTransactionTime - startTransactionTime > 500) {
+			LOG.warn("- /!\\ WARNING /!\\ Transaction with {} row(s) lasted {}s", numberOfRows, String.format("%.3f", (double)(endTransactionTime - startTransactionTime)/1000d));
+		} else {
+			LOG.info("- Transaction with {} row(s) lasted {}ms", numberOfRows, endTransactionTime - startTransactionTime);
+		}
 	}
 
 	public static void main(String[] args) {
