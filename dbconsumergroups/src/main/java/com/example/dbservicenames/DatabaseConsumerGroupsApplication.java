@@ -79,10 +79,14 @@ public class DatabaseConsumerGroupsApplication implements CommandLineRunner {
 		final List<ConsumerGroup> databaseServiceNameList = jdbcTemplate.query("""
 						SELECT consumer_group,
 							   concurrency_limit,
-						       degree_of_parallelism
+						       degree_of_parallelism,
+						       elapsed_time_limit,
+						       io_megabytes_limit
 						  FROM CS_RESOURCE_MANAGER.LIST_CURRENT_RULES()
 						 ORDER BY shares""",
-				(rs, rowNum) -> new ConsumerGroup(rs.getString(1), rs.getInt(2), rs.getInt(3)));
+				(rs, rowNum) -> new ConsumerGroup(rs.getString(1),
+						rs.getInt(2), rs.getInt(3),
+						rs.getInt(4), rs.getInt(5) ));
 
 		LOG.info("Available database consumer groups:");
 		for (ConsumerGroup dsn : databaseServiceNameList) {
