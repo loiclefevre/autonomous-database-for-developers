@@ -11,3 +11,4 @@
 ### See also:
 
 - [Configure Application Continuity on Autonomous Database (* documentation)](https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/application-continuity-configure.html)
+- [Client Configuration for Continuous Availability on Autonomous Database (* documentation)](https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/application-continuity-code.html)

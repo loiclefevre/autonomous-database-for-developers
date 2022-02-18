@@ -39,7 +39,7 @@ public class AlwaysOnApplication implements CommandLineRunner {
 
 	private final TransactionTemplate transactionTemplate;
 
-	private final JdbcTemplate jdbcTemplate;
+	private JdbcTemplate jdbcTemplate;
 
 	private SimpleJdbcCall enableTransparentApplicationContinuity;
 
@@ -139,9 +139,13 @@ public class AlwaysOnApplication implements CommandLineRunner {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				for (int i = 0; i < numberOfRows; i++) {
 					final long startTime = System.currentTimeMillis();
-					jdbcTemplate.update("insert into always_on (data) values (?)",
-							ps -> ps.setString(1, String.format("Hello %d!", ++number))
-					);
+					try {
+						update(false);
+					}
+					catch(org.springframework.dao.RecoverableDataAccessException rdae) {
+						jdbcTemplate = new JdbcTemplate(jdbcTemplate.getDataSource());
+						update(true);
+					}
 					final long endTime = System.currentTimeMillis();
 					if(endTime - startTime > 200) {
 						LOG.warn("\t- Inserted 1 row in {}ms", endTime - startTime);
@@ -156,6 +160,15 @@ public class AlwaysOnApplication implements CommandLineRunner {
 		} else {
 			LOG.info("- Transaction with {} row(s) lasted {}ms", numberOfRows, endTransactionTime - startTransactionTime);
 		}
+	}
+
+	private void update(boolean followingRecoverableException) {
+		if(followingRecoverableException) {
+			LOG.warn("Update following recoverable exception");
+		}
+		jdbcTemplate.update("insert into always_on (data) values (?)",
+				ps -> ps.setString(1, String.format("Hello %d!", ++number))
+		);
 	}
 
 	public static void main(String[] args) {
