@@ -24,10 +24,10 @@ import java.util.Map;
 import static java.sql.Types.*;
 
 /**
- * This demo shows how to connect to an Autonomous Database using the default HikariCP
- * connection pool. It uses the EasyConnect way that allows passing properties to create
- * connections (such as the row fetch size, default to 10 for Oracle JDBC driver...).
+ * This demo shows how to configure Consumer Groups to enable Transparent Application Continuity. It requires the
+ * Oracle Universal Connection Pool (or UCP) instead of Hikari.
  * <p>
+ * Restarting the database while the application run transactions should produce a slight delay of 12-15 seconds.
  *
  * @author Loïc Lefèvre
  */
@@ -35,11 +35,13 @@ import static java.sql.Types.*;
 public class AlwaysOnApplication implements CommandLineRunner {
 	private static final Logger LOG = LoggerFactory.getLogger(AlwaysOnApplication.class);
 
+	private static final String TAC_FAILOVER_TYPE = "AUTO";
+
 	private final OciConfiguration ociConfiguration;
 
 	private final TransactionTemplate transactionTemplate;
 
-	private JdbcTemplate jdbcTemplate;
+	private final JdbcTemplate jdbcTemplate;
 
 	private SimpleJdbcCall enableTransparentApplicationContinuity;
 
@@ -70,11 +72,9 @@ public class AlwaysOnApplication implements CommandLineRunner {
 	}
 
 
-		@Override
+	@Override
 	public void run(String... args) throws Exception {
 		LOG.info("=".repeat(126));
-
-		// best practices: https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/application-continuity-code.html#GUID-9479BBBA-C058-482D-85CC-904CEE1B4FF8
 
 		LOG.info("Connected with database consumer group: {}", ociConfiguration.getDatabaseConsumerGroup());
 
@@ -94,14 +94,15 @@ public class AlwaysOnApplication implements CommandLineRunner {
 
 		LOG.info("Current consumer group configuration is set to {}", alwaysOnConfig.failoverType());
 
-		if(!"AUTO".equals(alwaysOnConfig.failoverType())) {
+		// Transparent Application Continuity requires the AUTO value for failover type
+		if (!TAC_FAILOVER_TYPE.equals(alwaysOnConfig.failoverType())) {
 			final ApplicationContinuityConfiguration finalAlwaysOnConfig = alwaysOnConfig;
 			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 				@Override
 				protected void doInTransactionWithoutResult(TransactionStatus status) {
 					SqlParameterSource in = new MapSqlParameterSource()
 							.addValue("service_name", finalAlwaysOnConfig.name())
-							.addValue("failover_restore", "AUTO")
+							.addValue("failover_restore", TAC_FAILOVER_TYPE)
 							.addValue("replay_initiation_timeout", 60);
 
 					final Map<String, Object> out = enableTransparentApplicationContinuity.execute(in);
@@ -109,17 +110,17 @@ public class AlwaysOnApplication implements CommandLineRunner {
 			});
 
 			alwaysOnConfig = jdbcTemplate.queryForObject(String.format("""
-				SELECT name,
-				       nvl(failover_type,'Never configured'),
-				       failover_retries,
-				       failover_delay,
-				       failover_restore,
-				       commit_outcome,
-				       replay_initiation_timeout,
-				       session_state_consistency
-				  FROM ALL_SERVICES
-				 WHERE name like '%%%s%%'
-				""", ociConfiguration.getDatabaseConsumerGroup()), (rs, rowNum) ->
+					SELECT name,
+					       nvl(failover_type,'Never configured'),
+					       failover_retries,
+					       failover_delay,
+					       failover_restore,
+					       commit_outcome,
+					       replay_initiation_timeout,
+					       session_state_consistency
+					  FROM ALL_SERVICES
+					 WHERE name like '%%%s%%'
+					""", ociConfiguration.getDatabaseConsumerGroup().toLowerCase()), (rs, rowNum) ->
 					new ApplicationContinuityConfiguration(rs.getString(1), rs.getString(2)));
 
 			LOG.info("Current consumer group has been configured to {}", alwaysOnConfig.failoverType());
@@ -142,12 +143,12 @@ public class AlwaysOnApplication implements CommandLineRunner {
 					try {
 						update(false);
 					}
-					catch(org.springframework.dao.RecoverableDataAccessException rdae) {
-						jdbcTemplate = new JdbcTemplate(jdbcTemplate.getDataSource());
+					catch (org.springframework.dao.RecoverableDataAccessException rdae) {
+						//jdbcTemplate = new JdbcTemplate(jdbcTemplate.getDataSource());
 						update(true);
 					}
 					final long endTime = System.currentTimeMillis();
-					if(endTime - startTime > 200) {
+					if (endTime - startTime > 200) {
 						LOG.warn("\t- Inserted 1 row in {}ms", endTime - startTime);
 					}
 				}
@@ -155,16 +156,17 @@ public class AlwaysOnApplication implements CommandLineRunner {
 		});
 
 		final long endTransactionTime = System.currentTimeMillis();
-		if(endTransactionTime - startTransactionTime > 500) {
-			LOG.warn("- /!\\ WARNING /!\\ Transaction with {} row(s) lasted {}s", numberOfRows, String.format("%.3f", (double)(endTransactionTime - startTransactionTime)/1000d));
-		} else {
+		if (endTransactionTime - startTransactionTime > 500) {
+			LOG.warn("- /!\\ WARNING /!\\ Transaction with {} row(s) lasted {}s", numberOfRows, String.format("%.3f", (double) (endTransactionTime - startTransactionTime) / 1000d));
+		}
+		else {
 			LOG.info("- Transaction with {} row(s) lasted {}ms", numberOfRows, endTransactionTime - startTransactionTime);
 		}
 	}
 
 	private void update(boolean followingRecoverableException) {
-		if(followingRecoverableException) {
-			LOG.warn("Update following recoverable exception");
+		if (followingRecoverableException) {
+			LOG.warn("jdbcTemplate.update(...) following recoverable exception");
 		}
 		jdbcTemplate.update("insert into always_on (data) values (?)",
 				ps -> ps.setString(1, String.format("Hello %d!", ++number))

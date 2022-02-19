@@ -22,13 +22,8 @@
         <dependency>
             <groupId>com.oracle.database.ha</groupId>
             <artifactId>simplefan</artifactId>
-            <version>19.13.0.0.1</version>
+            <version>21.5.0.0</version>
         </dependency>
-        <!-- <dependency>
-            <groupId>com.oracle.database.ha</groupId>
-            <artifactId>ons</artifactId>
-            <version>19.13.0.0.1</version>
-        </dependency> -->
     </dependencies>
 
 
