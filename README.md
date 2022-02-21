@@ -40,12 +40,28 @@ You'll need to set several environment variables to be able to run these example
 ### Requirements
 Apart an Autonomous Database, you'll need a JDK 17 and Maven 3.X.
 
+### How to run the demos?
+Once the requirements are met, just clone the repo and build all the modules using Maven:
+```
+git clone https://github.com/loiclefevre/autonomous-database-for-developers.git
+mvn install 
+```
+
+Then you can run a module by invoking the Spring Boot run target and specifying the module name (all of that inside the root directory, no need to change to any directory):
+```
+mvn spring-boot:run -pl <module name>
+```
+Example to run the Auto-REST demo, run:
+```
+mvn spring-boot:run -pl autorest
+```
+
 ### Coming next...
 In no particular order yet:
-- Understanding execution plans and session statistics
 - Using Blockchain/Immutables tables
+- Reactive R2DBC driver
+- Understanding execution plans and session statistics
 - Understanding the benefits for developers of the Autonomous database underlying infrastructure: Exadata
-- Reactive R2DBC driver + UCP driver
 - Automatic partitioning unleashed
 - Automatic indexing unleashed
 - Applied Machine Learning on JSON data

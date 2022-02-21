@@ -2,7 +2,6 @@ package com.example.userlocks;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -50,8 +49,11 @@ public class UserLocksApplication implements CommandLineRunner {
 	// Use this for passing PL/SQL Boolean parameters
 	private static final int PLSQL_BOOLEAN = 252;
 
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
+	private final JdbcTemplate jdbcTemplate;
+
+	public UserLocksApplication(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
+	}
 
 	// PL/SQL procedures/functions that we can call
 	private SimpleJdbcCall getLockHandleFromName;
@@ -101,11 +103,13 @@ public class UserLocksApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		LOG.info("=".repeat(126));
 
+		// Using a named lock to prevent any clash with other apps
+		// by using just numbers to identify a specific user lock
 		String lockName = "MyUserLock";
 
 		LOG.info("Lock name is: {}", lockName);
 
-		// Get a lock handle mapped to this lock *name* and keep it for the next 10 days
+		//=== 1 === Get a lock handle mapped to this lock *name* and keep it for the next 10 days
 		SqlParameterSource in = new MapSqlParameterSource()
 				.addValue("lockname", lockName)
 				.addValue("expiration_secs", AllocationExpirationSecs);
@@ -116,18 +120,19 @@ public class UserLocksApplication implements CommandLineRunner {
 
 		LOG.info("Lock handle: {}", lockHandle);
 
-		// Request an exclusive lock using the lock handle
+		//=== 2 === Request an exclusive lock using the lock handle
 		in = new MapSqlParameterSource()
 				.addValue("lockhandle", lockHandle)
 				.addValue("lockmode", ExclusiveMode)
 				.addValue("timeout", 0 /*LockTimeout.MaximumWait*/) // Not waiting any second!
+				// Do not release the lock upon commit
 				.addValue("release_on_commit", false, PLSQL_BOOLEAN);
 
 		int result = requestLockByName.executeFunction(BigDecimal.class, in).intValue();
 
 		printRequestStatus(result, lockName);
 
-		// Wait 5 seconds if lock was acquired without any problem
+		//=== 3 === Wait 5 seconds if lock was acquired without any problem
 		// (e.g. no one else acquired it already)
 		if (result != Timeout) {
 			final long secondsToSleep = 5;
@@ -135,7 +140,7 @@ public class UserLocksApplication implements CommandLineRunner {
 			Thread.sleep(secondsToSleep * 1000L);
 		}
 
-		// Release the lock using its handle
+		//=== 4 === Release the lock using its handle
 		in = new MapSqlParameterSource()
 				.addValue("lockhandle", lockHandle);
 
