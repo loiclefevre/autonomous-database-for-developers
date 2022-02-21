@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cglib.core.Local;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -33,14 +32,13 @@ import java.util.Objects;
  * First, we load the GeoJSON data into a table with a JSON column. We'll need to create a Spatial index to be able to
  * use Spatial operators (such as SDO_CONTAINS).
  *
- *
  * @author Loïc Lefèvre
  * @see <a href="https://geojson.org/">The GeoJSON Specification (RFC 7946)</a>
  * @see <a href="https://epsg.io/">Coordinate Systems Worldwide</a>
  * @see <a href="https://docs.oracle.com/en/database/oracle/oracle-database/19/spatl/coordinate-systems-concepts.html">
- *     Coordinate Systems (Spatial Reference Systems)</a>
+ * Coordinate Systems (Spatial Reference Systems)</a>
  * @see <a href="https://docs.oracle.com/en/database/oracle/oracle-database/19/spatl/spatial-operators-reference.html">
- *     Spatial Operators (Oracle database 19c)</a>
+ * Spatial Operators (Oracle database 19c)</a>
  */
 @SpringBootApplication(scanBasePackages = "com.example")
 public class GeoJSONApplication implements CommandLineRunner {
@@ -99,17 +97,17 @@ public class GeoJSONApplication implements CommandLineRunner {
 
 		LOG.warn("Is Marseille really in France?");
 		LOG.info("Marseille coordinates (from https://epsg.io/):");
-		LOG.info("- longitude: {}", marseilleLongitude );
-		LOG.info("- latitude: {}", marseilleLatitude );
+		LOG.info("- longitude: {}", marseilleLongitude);
+		LOG.info("- latitude: {}", marseilleLatitude);
 
 		final String sql = String.format(Locale.US, """
-						SELECT c.country_id
-						FROM country_polygons c
-						WHERE SDO_CONTAINS(
-								sdo_util.from_geojson(c.geometry),
-								sdo_util.from_geojson('{"type": "Point", "coordinates": [%f, %f]}')
-						) = 'TRUE'
-					""",
+							SELECT c.country_id
+							FROM country_polygons c
+							WHERE SDO_CONTAINS(
+									sdo_util.from_geojson(c.geometry),
+									sdo_util.from_geojson('{"type": "Point", "coordinates": [%f, %f]}')
+							) = 'TRUE'
+						""",
 				marseilleLongitude, marseilleLatitude);
 
 		final String countryISO3Code = jdbcTemplate.queryForObject(sql, String.class);
@@ -121,14 +119,14 @@ public class GeoJSONApplication implements CommandLineRunner {
 		final double parisLongitude = -2.346941d;
 		final double parisLatitude = 48.858884d;
 
-		final BigDecimal distanceFromParis = jdbcTemplate.queryForObject(String.format( Locale.US, """
-					SELECT ROUND( SDO_GEOM.SDO_DISTANCE(
-							  sdo_util.from_geojson('{"type": "Point", "coordinates": [%f, %f]}'),
-							  sdo_util.from_geojson('{"type": "Point", "coordinates": [%f, %f]}'),
-							  0.01, 'unit=KM'
-						   ), 2)
-					  FROM dual
-				""", marseilleLongitude, marseilleLatitude,
+		final BigDecimal distanceFromParis = jdbcTemplate.queryForObject(String.format(Locale.US, """
+							SELECT ROUND( SDO_GEOM.SDO_DISTANCE(
+									  sdo_util.from_geojson('{"type": "Point", "coordinates": [%f, %f]}'),
+									  sdo_util.from_geojson('{"type": "Point", "coordinates": [%f, %f]}'),
+									  0.01, 'unit=KM'
+								   ), 2)
+							  FROM dual
+						""", marseilleLongitude, marseilleLatitude,
 				parisLongitude, parisLatitude), BigDecimal.class);
 
 		LOG.info("The distance between Marseille and Paris is: {} KM", distanceFromParis);
