@@ -2,6 +2,7 @@ package com.example.alwaysonapp;
 
 import com.example.alwaysonapp.model.ApplicationContinuityConfiguration;
 import com.example.configuration.OciConfiguration;
+import oracle.jdbc.replay.ReplayStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -40,7 +41,7 @@ public class AlwaysOnApplication implements CommandLineRunner {
 
 	private final TransactionTemplate transactionTemplate;
 
-	private final JdbcTemplate jdbcTemplate;
+	private JdbcTemplate jdbcTemplate;
 
 	private SimpleJdbcCall enableTransparentApplicationContinuity;
 
@@ -129,6 +130,11 @@ public class AlwaysOnApplication implements CommandLineRunner {
 			insertRows(10);
 
 			Thread.sleep(50L);
+
+			ReplayStatistics replayStats = ((oracle.jdbc.replay.OracleDataSource)jdbcTemplate.getDataSource()).getReplayStatistics();
+
+			LOG.info("Number of database calls affected by outage   : {}", replayStats.getTotalCallsAffectedByOutages());
+			LOG.info("Number of database calls replayed with success: {}", replayStats.getSuccessfulReplayCount());
 		}
 	}
 
@@ -143,7 +149,7 @@ public class AlwaysOnApplication implements CommandLineRunner {
 						update(false);
 					}
 					catch (org.springframework.dao.RecoverableDataAccessException rdae) {
-						//jdbcTemplate = new JdbcTemplate(jdbcTemplate.getDataSource());
+						jdbcTemplate = new JdbcTemplate(jdbcTemplate.getDataSource());
 						update(true);
 					}
 					final long endTime = System.currentTimeMillis();
