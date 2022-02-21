@@ -37,7 +37,18 @@ import java.util.Objects;
 import java.util.Properties;
 
 /**
+ * This demo shows how to load JSON data inside a Simple Oracle Document Access <b>OracleCollection</b> with client-side
+ * <b>OSON encoding</b>. It also highlights some standard SQL operators to work on JSON data:
+ * <ul>
+ *     <li>JSON_TABLE (and its simplest syntax using NESTED "JSON column") to unnest JSON arrays into relational rows</li>
+ *     <li>JSON_OBJECT to create JSON documents</li>
+ * </ul>
+ * And there are numerous others to discover.
+ * <p>
+ * Finally, it shows how to join JSON fields with Relational columns to leverage all the power of SQL analytics.
+ *
  * @author Loïc Lefèvre
+ * @see <a href="https://docs.oracle.com/en/database/oracle/oracle-database/19/adjsn/query-json-data.html">JSON Developer's Guide - Query JSON Data</a>
  */
 @SpringBootApplication(scanBasePackages = "com.example")
 public class RelationalJSONApplication implements CommandLineRunner {
