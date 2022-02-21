@@ -147,7 +147,7 @@ public class AlwaysOnApplication implements CommandLineRunner {
 						update(true);
 					}
 					final long endTime = System.currentTimeMillis();
-					if (endTime - startTime > 200) {
+					if (endTime - startTime > 400) {
 						LOG.warn("\t- Inserted 1 row in {}ms", endTime - startTime);
 					}
 				}
@@ -155,7 +155,7 @@ public class AlwaysOnApplication implements CommandLineRunner {
 		});
 
 		final long endTransactionTime = System.currentTimeMillis();
-		if (endTransactionTime - startTransactionTime > 500) {
+		if (endTransactionTime - startTransactionTime > 2500) {
 			LOG.warn("- /!\\ WARNING /!\\ Transaction with {} row(s) lasted {}s", numberOfRows, String.format("%.3f", (double) (endTransactionTime - startTransactionTime) / 1000d));
 		}
 		else {
@@ -170,6 +170,9 @@ public class AlwaysOnApplication implements CommandLineRunner {
 		jdbcTemplate.update("insert into always_on (data) values (?)",
 				ps -> ps.setString(1, String.format("Hello %d!", ++number))
 		);
+
+		try { Thread.sleep(20L); }
+		catch (InterruptedException ignored) {}
 	}
 
 	public static void main(String[] args) {
