@@ -132,14 +132,14 @@ public class AlwaysOnApplication implements CommandLineRunner {
 
 			Thread.sleep(50L);
 
-
+			//oracle.jdbc.replay.OracleConnectionPoolDataSourceImpl
 			//
 			// oracle.ucp.jdbc.PoolDataSourceImpl
 			//oracle.ucp.jdbc.oracle.OracleReplayableConnectionConnectionPool
 			//oracle.ucp.jdbc.PoolDataSource
 			//oracle.ucp.jdbc.PoolDataSource p;
 			//oracle.jdbc.replay.OracleConnectionPoolDataSource r;
-			ReplayStatistics replayStats = ((oracle.jdbc.replay.OracleDataSource)jdbcTemplate.getDataSource()).getReplayStatistics();
+			ReplayStatistics replayStats = ((oracle.jdbc.replay.OracleDataSource)jdbcTemplate.getDataSource().unwrap(oracle.jdbc.replay.OracleDataSource.class)).getReplayStatistics();
 
 			LOG.info("Number of database calls affected by outage   : {}", replayStats.getTotalCallsAffectedByOutages());
 			LOG.info("Number of database calls replayed with success: {}", replayStats.getSuccessfulReplayCount());
