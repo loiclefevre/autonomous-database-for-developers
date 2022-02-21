@@ -2,6 +2,7 @@ package com.example.alwaysonapp;
 
 import com.example.alwaysonapp.model.ApplicationContinuityConfiguration;
 import com.example.configuration.OciConfiguration;
+import oracle.jdbc.replay.OracleDataSourceImpl;
 import oracle.jdbc.replay.ReplayStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,6 +132,11 @@ public class AlwaysOnApplication implements CommandLineRunner {
 
 			Thread.sleep(50L);
 
+
+			//
+			// oracle.ucp.jdbc.PoolDataSourceImpl
+			//oracle.ucp.jdbc.oracle.OracleReplayableConnectionConnectionPool
+			//oracle.ucp.jdbc.PoolDataSource
 			//oracle.ucp.jdbc.PoolDataSource p;
 			//oracle.jdbc.replay.OracleConnectionPoolDataSource r;
 			ReplayStatistics replayStats = ((oracle.jdbc.replay.OracleDataSource)jdbcTemplate.getDataSource()).getReplayStatistics();
