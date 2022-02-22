@@ -1,6 +1,6 @@
 # Autonomous Database for Developers
 
-This repository provides various demos using Spring Boot and an Oracle Autonomous Database (you can get 2 databases for free [here](https://www.oracle.com/cloud/free/)).
+This repository provides various demos using Spring Boot and a *Converged* Oracle Autonomous Database (you can get 2 databases for free [here](https://www.oracle.com/cloud/free/)).
 
 ![](./doc/img/java-logo.png) + ![](./doc/img/spring-boot-logo.png) + ![](./doc/img/adb-logo.png) + ![](./doc/img/ords-logo.png) + ![](./doc/img/maven-logo.png)
 
