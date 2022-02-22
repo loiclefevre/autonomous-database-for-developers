@@ -2,7 +2,7 @@
 
 This repository provides various demos using Spring Boot and an Oracle Autonomous Database (you can get 2 databases for free [here](https://www.oracle.com/cloud/free/)).
 
-![](./doc/img/java-logo.png) + ![](./doc/img/spring-boot-logo.png) + ![](./doc/img/adb-logo.png) + ![](./doc/img/ords-logo.png)
+![](./doc/img/java-logo.png) + ![](./doc/img/spring-boot-logo.png) + ![](./doc/img/adb-logo.png) + ![](./doc/img/ords-logo.png) + ![](./doc/img/maven-logo.png)
 
 ## Demos
 The following demos are presented in a logical order so it is preferable starting with demo 1, then demo 2, etc...
