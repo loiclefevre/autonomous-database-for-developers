@@ -10,5 +10,6 @@
 
 ### See also:
 
+- [Application Checklist for Continuous Service with Autonomous Database on Shared Infrastructure (Tech Brief - Nov. 2021)](https://www.oracle.com/a/otn/docs/checklist_atps_2021.pdf)
 - [Configure Application Continuity on Autonomous Database (* documentation)](https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/application-continuity-configure.html)
 - [Client Configuration for Continuous Availability on Autonomous Database (* documentation)](https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/application-continuity-code.html)

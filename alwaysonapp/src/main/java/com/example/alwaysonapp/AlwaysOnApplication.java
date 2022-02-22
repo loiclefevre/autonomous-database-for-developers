@@ -2,8 +2,6 @@ package com.example.alwaysonapp;
 
 import com.example.alwaysonapp.model.ApplicationContinuityConfiguration;
 import com.example.configuration.OciConfiguration;
-import oracle.jdbc.replay.OracleDataSourceImpl;
-import oracle.jdbc.replay.ReplayStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -19,30 +17,47 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.PostConstruct;
+import java.io.InputStream;
+import java.util.Locale;
 import java.util.Map;
+import java.util.logging.LogManager;
 
 import static java.sql.Types.NUMERIC;
 import static java.sql.Types.VARCHAR;
 
 /**
  * This demo shows how to configure Consumer Groups to enable Transparent Application Continuity. It requires the
- * Oracle Universal Connection Pool (or UCP) instead of Hikari.
+ * Oracle Universal Connection Pool (or UCP) instead of Hikari!
  * <p>
- * Restarting the database while the application run transactions should produce a slight delay of 12-15 seconds.
+ * Restarting the database while the application runs transactions should produce a slight delay of 12-15 seconds.
  *
  * @author Loïc Lefèvre
  */
 @SpringBootApplication(scanBasePackages = "com.example")
 public class AlwaysOnApplication implements CommandLineRunner {
+	static {
+		// To display what happens behind the curtain:
+		// REMOVE IN PRODUCTION!
+		System.setProperty("oracle.jdbc.Trace", "true"); //-1- enable Oracle JDBC driver tracing
+
+		//-2- enable Oracle JDBC driver Replay tracing
+		try {
+			final LogManager logManager = LogManager.getLogManager();
+			try (final InputStream is = AlwaysOnApplication.class.getResourceAsStream("/jdbc_log.properties")) {
+				logManager.readConfiguration(is);
+			}
+		}
+		catch (Exception ignored) {
+		}
+	}
+
 	private static final Logger LOG = LoggerFactory.getLogger(AlwaysOnApplication.class);
 
 	private static final String TAC_FAILOVER_TYPE = "AUTO";
 
 	private final OciConfiguration ociConfiguration;
-
 	private final TransactionTemplate transactionTemplate;
-
-	private JdbcTemplate jdbcTemplate;
+	private final JdbcTemplate jdbcTemplate;
 
 	private SimpleJdbcCall enableTransparentApplicationContinuity;
 
@@ -72,11 +87,61 @@ public class AlwaysOnApplication implements CommandLineRunner {
 				);
 	}
 
-
 	@Override
 	public void run(String... args) throws Exception {
 		LOG.info("=".repeat(126));
 
+		LOG.info("oracle.jdbc.defaultConnectionValidation: {}", System.getProperty("oracle.jdbc.defaultConnectionValidation"));
+
+		setupTransparentApplicationContinuity();
+
+		while (true) {
+			insertRows(10);
+
+			Thread.sleep(50L);
+		}
+	}
+
+	private static final int ONE_ROW_DELAY_IN_MILLISECONDS = 500;
+
+	private void insertRows(final int numberOfRows) {
+		final long startTransactionTime = System.currentTimeMillis();
+		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				for (int i = 0; i < numberOfRows; i++) {
+					final long startTime = System.currentTimeMillis();
+					update();
+					final long endTime = System.currentTimeMillis();
+					if (endTime - startTime > ONE_ROW_DELAY_IN_MILLISECONDS * 2) {
+						LOG.warn("\t- Inserted 1 row in {}ms", endTime - startTime);
+					}
+				}
+			}
+		});
+
+		final long endTransactionTime = System.currentTimeMillis();
+		if (endTransactionTime - startTransactionTime > ONE_ROW_DELAY_IN_MILLISECONDS * (numberOfRows + 2)) {
+			LOG.warn("- /!\\ WARNING /!\\ Transaction with {} row(s) lasted {}s", numberOfRows, String.format(Locale.US, "%.3f", (double) (endTransactionTime - startTransactionTime) / 1000d));
+		}
+		else {
+			LOG.info("- Transaction with {} row(s) lasted {}ms", numberOfRows, endTransactionTime - startTransactionTime);
+		}
+	}
+
+	private void update() {
+		jdbcTemplate.update("insert into always_on (data) values (?)",
+				ps -> ps.setString(1, String.format("Hello %d!", ++number))
+		);
+
+		try {
+			Thread.sleep(ONE_ROW_DELAY_IN_MILLISECONDS);
+		}
+		catch (InterruptedException ignored) {
+		}
+	}
+
+	private void setupTransparentApplicationContinuity() {
 		LOG.info("Connected with database consumer group: {}", ociConfiguration.getDatabaseConsumerGroup());
 
 		ApplicationContinuityConfiguration alwaysOnConfig = jdbcTemplate.queryForObject(String.format("""
@@ -126,64 +191,6 @@ public class AlwaysOnApplication implements CommandLineRunner {
 
 			LOG.info("Current consumer group has been configured to {}", alwaysOnConfig.failoverType());
 		}
-
-		while (true) {
-			insertRows(10);
-
-			Thread.sleep(50L);
-
-			//oracle.ucp.jdbc.oracle.OracleReplayableConnectionConnectionPool
-			//oracle.ucp.jdbc.PoolDataSource
-			//oracle.ucp.jdbc.PoolDataSource p;
-			//oracle.jdbc.replay.OracleConnectionPoolDataSource r;
-//			ReplayStatistics replayStats = ((oracle.jdbc.replay.OracleDataSource)jdbcTemplate.getDataSource().unwrap(oracle.jdbc.replay.OracleDataSource.class)).getReplayStatistics();
-
-//			LOG.info("Number of database calls affected by outage   : {}", replayStats.getTotalCallsAffectedByOutages());
-//			LOG.info("Number of database calls replayed with success: {}", replayStats.getSuccessfulReplayCount());
-		}
-	}
-
-	private void insertRows(final int numberOfRows) {
-		final long startTransactionTime = System.currentTimeMillis();
-		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				for (int i = 0; i < numberOfRows; i++) {
-					final long startTime = System.currentTimeMillis();
-					try {
-						update(false);
-					}
-					catch (org.springframework.dao.RecoverableDataAccessException rdae) {
-						//jdbcTemplate = new JdbcTemplate(jdbcTemplate.getDataSource());
-						update(true);
-					}
-					final long endTime = System.currentTimeMillis();
-					if (endTime - startTime > 400) {
-						LOG.warn("\t- Inserted 1 row in {}ms", endTime - startTime);
-					}
-				}
-			}
-		});
-
-		final long endTransactionTime = System.currentTimeMillis();
-		if (endTransactionTime - startTransactionTime > 2500) {
-			LOG.warn("- /!\\ WARNING /!\\ Transaction with {} row(s) lasted {}s", numberOfRows, String.format("%.3f", (double) (endTransactionTime - startTransactionTime) / 1000d));
-		}
-		else {
-			LOG.info("- Transaction with {} row(s) lasted {}ms", numberOfRows, endTransactionTime - startTransactionTime);
-		}
-	}
-
-	private void update(boolean followingRecoverableException) {
-		if (followingRecoverableException) {
-			LOG.warn("jdbcTemplate.update(...) following recoverable exception");
-		}
-		jdbcTemplate.update("insert into always_on (data) values (?)",
-				ps -> ps.setString(1, String.format("Hello %d!", ++number))
-		);
-
-		try { Thread.sleep(20L); }
-		catch (InterruptedException ignored) {}
 	}
 
 	public static void main(String[] args) {
