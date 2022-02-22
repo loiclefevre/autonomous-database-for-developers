@@ -6,7 +6,8 @@
   - at the connection string level using best practices* from documentation
   - at the connection, connection pool and datasource level
 - Showing that during ACID transactions nothing but a little delay happens **when the database is restarted**!
- 
+
+![](./doc/img/TACreplaying.png) 
 
 ### See also:
 
