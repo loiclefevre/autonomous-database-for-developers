@@ -36,6 +36,8 @@ import static java.sql.Types.VARCHAR;
 @SpringBootApplication(scanBasePackages = "com.example")
 public class AlwaysOnApplication implements CommandLineRunner {
 	static {
+		System.setProperty("oracle.jdbc.defaultConnectionValidation","SOCKET");
+
 		// To display what happens behind the curtain:
 		// REMOVE IN PRODUCTION!
 		System.setProperty("oracle.jdbc.Trace", "true"); //-1- enable Oracle JDBC driver tracing
