@@ -5,7 +5,6 @@ import com.example.transactionalqueue.service.AQDequeueService;
 import com.example.transactionalqueue.service.AQEnqueueService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -37,24 +36,27 @@ import static com.example.transactionalqueue.service.AQEnqueueService.HIGH_PRIOR
 public class TransactionalQueueApplication implements CommandLineRunner {
 	private static final Logger LOG = LoggerFactory.getLogger(TransactionalQueueApplication.class);
 
-	@Autowired
-	private AQEnqueueService aqEnqueueService;
+	private final AQEnqueueService aqEnqueueService;
 
-	@Autowired
-	private DataSource dataSource;
+	private final DataSource dataSource;
 
-	@Autowired
-	private OciConfiguration ociConfiguration;
+	private final OciConfiguration ociConfiguration;
 
 	@Value("${aq.dequeue.tasks}")
 	private int tasksNumber;
 
-	@Autowired
-	private ThreadPoolTaskExecutor myTasksExecutor;
+	private final ThreadPoolTaskExecutor myTasksExecutor;
 
-	private CountDownLatch latch = new CountDownLatch(1);
+	private final CountDownLatch latch = new CountDownLatch(1);
 
-	private List<AQDequeueService> aqDequeueServiceTasks = new ArrayList<>();
+	private final List<AQDequeueService> aqDequeueServiceTasks = new ArrayList<>();
+
+	public TransactionalQueueApplication(AQEnqueueService aqEnqueueService, DataSource dataSource, OciConfiguration ociConfiguration, ThreadPoolTaskExecutor myTasksExecutor) {
+		this.aqEnqueueService = aqEnqueueService;
+		this.dataSource = dataSource;
+		this.ociConfiguration = ociConfiguration;
+		this.myTasksExecutor = myTasksExecutor;
+	}
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void startDequeueServices() {
