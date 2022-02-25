@@ -38,22 +38,22 @@ You'll need to set several environment variables to be able to run these example
   requirements](https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/manage-users-create.html#GUID-72DFAF2A-C4C3-4FAC-A75B-846CC6EDBA3F))
 
 ### Requirements
-Apart an Autonomous Database configured to work with [TLS connectivity](https://blogs.oracle.com/developers/post/securely-connecting-to-autonomous-db-without-a-wallet-using-tls), you'll need a [JDK 17](https://www.oracle.com/java/technologies/downloads/) and [Maven 3.X](https://maven.apache.org/download.cgi).
+Apart an Autonomous Database configured to work with [TLS connectivity](https://blogs.oracle.com/developers/post/securely-connecting-to-autonomous-db-without-a-wallet-using-tls), you'll need a [JDK 17](https://www.oracle.com/java/technologies/downloads/).
 
 ### How to run the demos?
 Once the requirements are met, just clone the repo and build all the modules using Maven:
 ```
 git clone https://github.com/loiclefevre/autonomous-database-for-developers.git
-mvn install 
+mvnw install 
 ```
 
 Then you can run a module by invoking the Spring Boot run target and specifying the module name (all of that inside the root directory, no need to change to any directory):
 ```
-mvn spring-boot:run -pl <module name>
+mvnw spring-boot:run -pl <module name>
 ```
 Example to run the Auto-REST demo, run:
 ```
-mvn spring-boot:run -pl autorest
+mvnw spring-boot:run -pl autorest
 ```
 
 ### Coming next...
