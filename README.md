@@ -38,7 +38,7 @@ You'll need to set several environment variables to be able to run these example
   requirements](https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/manage-users-create.html#GUID-72DFAF2A-C4C3-4FAC-A75B-846CC6EDBA3F))
 
 ### Requirements
-Apart an Autonomous Database, you'll need a JDK 17 and Maven 3.X.
+Apart an Autonomous Database configured to work with [TLS connectivity](https://blogs.oracle.com/developers/post/securely-connecting-to-autonomous-db-without-a-wallet-using-tls), you'll need a [JDK 17](https://www.oracle.com/java/technologies/downloads/) and [Maven 3.X](https://maven.apache.org/download.cgi).
 
 ### How to run the demos?
 Once the requirements are met, just clone the repo and build all the modules using Maven:
