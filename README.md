@@ -40,6 +40,11 @@ You'll need to set several environment variables to be able to run these example
 ### Requirements
 Apart an Autonomous Database configured to work with [TLS connectivity](https://blogs.oracle.com/developers/post/securely-connecting-to-autonomous-db-without-a-wallet-using-tls), you'll need a [JDK 17](https://www.oracle.com/java/technologies/downloads/).
 
+You can get one for Linux as wollowing:
+```
+curl https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.tar.gz
+```
+
 ### How to run the demos?
 Once the requirements are met, just clone the repo and build all the modules using Maven:
 ```
