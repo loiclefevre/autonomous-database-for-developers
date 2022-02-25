@@ -3,7 +3,6 @@ package com.example.dbservicenames;
 import com.example.dbservicenames.model.ConsumerGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -27,9 +26,11 @@ import java.util.Objects;
 public class DatabaseConsumerGroupsApplication implements CommandLineRunner {
 	private static final Logger LOG = LoggerFactory.getLogger(DatabaseConsumerGroupsApplication.class);
 
-	@Autowired
-	@Qualifier("adminJdbcTemplate")
-	private JdbcTemplate jdbcTemplate;
+	private final JdbcTemplate jdbcTemplate;
+
+	public DatabaseConsumerGroupsApplication(@Qualifier("adminJdbcTemplate") JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
+	}
 
 	// PL/SQL procedures/functions that we can call
 	private SimpleJdbcCall switchConsumerGroup;
