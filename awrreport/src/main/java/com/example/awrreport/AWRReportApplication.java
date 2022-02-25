@@ -3,7 +3,6 @@ package com.example.awrreport;
 import com.example.awrreport.model.RevenuePerYearPerBrandInEurope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -36,13 +35,15 @@ import java.util.Objects;
 public class AWRReportApplication implements CommandLineRunner {
 	private static final Logger LOG = LoggerFactory.getLogger(AWRReportApplication.class);
 
-	@Autowired
-	@Qualifier("primaryJdbcTemplate")
-	private JdbcTemplate primaryJdbcTemplate;
+	private final JdbcTemplate primaryJdbcTemplate;
 
-	@Autowired
-	@Qualifier("adminJdbcTemplate")
-	private JdbcTemplate adminJdbcTemplate;
+	private final JdbcTemplate adminJdbcTemplate;
+
+	public AWRReportApplication(@Qualifier("primaryJdbcTemplate") JdbcTemplate primaryJdbcTemplate,
+								@Qualifier("adminJdbcTemplate") JdbcTemplate adminJdbcTemplate) {
+		this.primaryJdbcTemplate = primaryJdbcTemplate;
+		this.adminJdbcTemplate = adminJdbcTemplate;
+	}
 
 	@PostConstruct
 	void init() {

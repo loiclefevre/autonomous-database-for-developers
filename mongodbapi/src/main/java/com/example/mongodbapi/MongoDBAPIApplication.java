@@ -5,7 +5,6 @@ import com.example.mongodbapi.model.SnippetCountPerLanguage;
 import com.example.mongodbapi.repository.SnippetRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,15 +15,32 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-@SpringBootApplication
+/**
+ * This demo shows how to work with an Oracle Autonomous Database throughout the MongoDB API using MongoRepository.
+ * <ul>
+ *     <li>it inserts some POJOs and query them using the MQL like API</li>
+ *     <li>it bulk inserts 1,000 random POJOs</li>
+ *     <li>it does some stats using plain SQL with GROUP BY leveraging SQL dot notation to access JSON fields</li>
+ * </ul>
+ * <p>
+ * The MongoDB connection string is built by the MongoDBConfiguration bean.
+ *
+ * @author Loïc Lefèvre
+ * @see <a href="https://docs.oracle.com/en/database/oracle/oracle-database/19/adjsn/query-json-data.html">JSON Developer's Guide - Query JSON Data</a>
+ * @see com.example.mongodbapi.configuration.MongoDBConfiguration
+ */
+@SpringBootApplication(scanBasePackages = "com.example")
 public class MongoDBAPIApplication implements CommandLineRunner {
 	private static final Logger LOG = LoggerFactory.getLogger(MongoDBAPIApplication.class);
 
-	@Autowired
-	private SnippetRepository snippetRepository;
+	private final SnippetRepository snippetRepository;
 
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
+	private final JdbcTemplate jdbcTemplate;
+
+	public MongoDBAPIApplication(SnippetRepository snippetRepository, JdbcTemplate jdbcTemplate) {
+		this.snippetRepository = snippetRepository;
+		this.jdbcTemplate = jdbcTemplate;
+	}
 
 	@Override
 	public void run(String... args) throws Exception {
