@@ -5,7 +5,7 @@ This repository provides various demos using Spring Boot and a *Converged* Oracl
 ![](./doc/img/java-logo.png) + ![](./doc/img/spring-boot-logo.png) + ![](./doc/img/adb-logo.png) + ![](./doc/img/ords-logo.png) + ![](./doc/img/maven-logo.png) + ![](./doc/img/liquibase-logo.png)
 
 ## Demos
-The following demos are presented in a logical order so it is preferable starting with demo 1, then demo 2, etc...
+The following demos are presented in a logical order, so it is preferable starting with demo 1, then demo 2, etc...
 - [Demo 1 - Using the REST Enabled SQL Service to create a new database user](./sqlviarest)
 - [Demo 2 - Connecting using Spring Boot JDBC](./connecting)
 - [Demo 3 - Calling PL/SQL functions to manage database User Locks](./userlocks)
@@ -16,7 +16,7 @@ The following demos are presented in a logical order so it is preferable startin
 - [Demo 8 - Auto-REST-enable tables (+loading, OAuth...)](./autorest)
 - [Demo 9 - Spatial analytics with GeoJSON](./geojson)
 - [Demo 10 - Working with JSON and Relational data together](./relationaljson)
-- [Demo 11 - Always On Application](./alwaysonapp)
+- [Demo 11 - Always ON Application](./alwaysonapp)
 
 Each demo is a Maven module depending upon the `common` module.
 
@@ -40,7 +40,7 @@ You'll need to set several environment variables to be able to run these example
 ### Requirements
 Apart an Autonomous Database configured to work with [TLS connectivity](https://blogs.oracle.com/developers/post/securely-connecting-to-autonomous-db-without-a-wallet-using-tls), you'll need a [JDK 17](https://www.oracle.com/java/technologies/downloads/).
 
-You can get one for Linux as wollowing:
+You can get one for Linux as following:
 ```
 curl https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.tar.gz
 ```
@@ -65,10 +65,11 @@ mvnw spring-boot:run -pl autorest
 In no particular order yet:
 - Using Blockchain/Immutables tables
 - Reactive R2DBC driver
+- Applied Machine Learning on JSON data
+- Memoptimized for write tables for IoT
 - Understanding execution plans and session statistics
 - Understanding the benefits for developers of the Autonomous database underlying infrastructure: Exadata
 - Automatic partitioning unleashed
 - Automatic indexing unleashed
-- Applied Machine Learning on JSON data
 - Property Graph Analytics with PGX and PGQL
 - Using Oracle Machine Learning for Python using GraalVM
