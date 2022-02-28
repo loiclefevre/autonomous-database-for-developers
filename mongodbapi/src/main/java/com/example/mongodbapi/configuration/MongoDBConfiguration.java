@@ -29,6 +29,7 @@ public class MongoDBConfiguration {
 		final String uri = String.format("mongodb://%s:%s@%s.adb.%s.oraclecloudapps.com:27016/?authMechanism=PLAIN&authSource=$external&ssl=true&retryWrites=false",
 				databaseUsername, databasePassword,
 				databaseName.replaceAll("_", "-"), region );
+		LOG.info("MongoDB URI: {}", uri.replace(databasePassword, "************"));
 		return MongoClients.create(uri);
 	}
 
