@@ -66,7 +66,7 @@ public class MongoDBAPIApplication implements CommandLineRunner {
 						 					select s.data.language, count(*)
 						 					  from snippet s
 						 				  group by s.data.language
-						 				  order by 2 desc 
+						 				  order by 2 desc
 						 				  fetch first 3 rows only
 						""",
 				(rs, rowNum) -> new SnippetCountPerLanguage(rs.getString(1), rs.getLong(2))));

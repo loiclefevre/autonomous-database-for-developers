@@ -3,7 +3,7 @@
 - Using Oracle Universal Connection Pool (or `UCP`)
 - Enabling Transparent Application Continuity
   - at the consumer group level using `DBMS_APP_CONT_ADMIN.ENABLE_TAC`
-  - at the connection string level using best practices* from documentation
+  - at the connection string level using *best practices* from documentation
   - at the connection, connection pool and datasource level
 - Showing that during ACID transactions nothing but a little delay happens **when the database is restarted**!
 
