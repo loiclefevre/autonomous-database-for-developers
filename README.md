@@ -50,6 +50,7 @@ tar -xf jdk-17_linux-x64_bin.tar.gz
 Once the requirements are met, just clone the repo and build all the modules using Maven:
 ```
 git clone https://github.com/loiclefevre/autonomous-database-for-developers.git
+cd autonomous-database-for-developers
 mvnw install 
 ```
 
