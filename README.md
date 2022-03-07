@@ -42,7 +42,8 @@ Apart an Autonomous Database configured to work with [TLS connectivity](https://
 
 You can get one for Linux as following:
 ```
-curl https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.tar.gz
+curl -L -O https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.tar.gz
+tar -xf jdk-17_linux-x64_bin.tar.gz
 ```
 
 ### How to run the demos?
@@ -73,3 +74,8 @@ In no particular order yet:
 - Automatic indexing unleashed
 - Property Graph Analytics with PGX and PGQL
 - Using Oracle Machine Learning for Python using GraalVM
+
+[//]: <> (https://asktom.oracle.com/pls/apex/asktom.search?oh=17401)
+[//]: <> (https://blogs.oracle.com/machinelearning/)
+[//]: <> (https://asktom.oracle.com/pls/apex/f?p=100:551::::551:P551_CLASS_ID,P551_INVITED:15741,N&cs=143C257921A735F18DBC7650B4E24685E)
+
