@@ -51,7 +51,8 @@ Once the requirements are met, just clone the repo and build all the modules usi
 ```
 git clone https://github.com/loiclefevre/autonomous-database-for-developers.git
 cd autonomous-database-for-developers
-mvnw install 
+chmod +x mvnw 
+./mvnw install 
 ```
 
 Then you can run a module by invoking the Spring Boot run target and specifying the module name (all of that inside the root directory, no need to change to any directory):
