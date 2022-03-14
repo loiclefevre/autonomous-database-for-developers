@@ -5,3 +5,7 @@
   - with the ADMIN user to take initial and final snapshots and then generate the report  
 - Using the provided dataset SSSB ([sample star schema benchmark](https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/sample-queries.html)) to simulate some workload
 - Using Spring `JdbcTemplate`, `NamedParameterJdbcTemplate`, `SqlParameterSource`, and `RowMapper`  
+
+![Demo run](./doc/img/demo_run.png)
+
+![Generating AWR Report](./doc/img/generating_awr_report.png)
