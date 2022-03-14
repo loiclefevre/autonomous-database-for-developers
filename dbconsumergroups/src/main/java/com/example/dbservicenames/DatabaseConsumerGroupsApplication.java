@@ -9,6 +9,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 
 import javax.annotation.PostConstruct;
@@ -94,13 +96,16 @@ public class DatabaseConsumerGroupsApplication implements CommandLineRunner {
 			LOG.info("- {}", dsn);
 		}
 
-		/*
+		// Now switching consumer group
+		final String newConsumerGroup = "HIGH";
+
+		LOG.info("Switching consumer group: from {} to {}", consumerGroup, newConsumerGroup);
 		SqlParameterSource in = new MapSqlParameterSource()
-				.addValue("service_name", "HIGH");
+				.addValue("service_name", newConsumerGroup);
 
 		switchConsumerGroup.execute(in);
 
-		consumerGroup = Objects.requireNonNull(jdbcTemplate.queryForObject("""
+		final String currentConsumerGroup = Objects.requireNonNull(jdbcTemplate.queryForObject("""
 						WITH cs_table AS (SELECT regexp_substr( 
 														SYS_CONTEXT('USERENV','SERVICE_NAME'), 
 														'(_low.|_medium.|_high.|_tpurgent.|_tp.)' ) cs 
@@ -109,8 +114,7 @@ public class DatabaseConsumerGroupsApplication implements CommandLineRunner {
 						  FROM cs_table""",
 				String.class));
 
-		LOG.info("Current ADMIN Consumer Group is: {}", consumerGroup);
-		*/
+		LOG.info("Current ADMIN Consumer Group is: {}", currentConsumerGroup);
 	}
 
 
