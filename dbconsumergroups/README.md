@@ -22,3 +22,5 @@ You can modify the MEDIUM service concurrency limit (this also changes the degre
 - LOW: A lowest priority application connection service for reporting or batch processing operations. This connection service does not run with parallelism.
 
 **Note**:After connecting to the database using one service, do not attempt to manually switch that connection to a different service by simply changing the consumer group of the connection. When you connect using a service, Autonomous Database performs more actions to configure the connection than just setting its consumer group.
+
+![Demo run](./doc/img/demo_run.png)
