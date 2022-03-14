@@ -50,7 +50,7 @@ And don't forget to configure your `PATH` environment variable.
 
 [*]() _TLS connectivity requires to add your IP address to the allowed client addresses._
 * _If connecting from **your laptop or a VM**, retrieving the IP address should be straightforward._
-* _If connecting from **Oracle Cloud Infrastructure Cloud Shell**, then use the following command to retrieve its IP address:_
+* _If connecting from [**Oracle Cloud Infrastructure Cloud Shell**](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/cloudshellgettingstarted.htm) (a web browser-based Linux terminal accessible from the Oracle Cloud Console), then use the following command to retrieve its IP address:_
   `curl -s checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//'`
 
 
