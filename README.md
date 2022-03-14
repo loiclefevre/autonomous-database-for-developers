@@ -38,7 +38,7 @@ You'll need to set several environment variables to be able to run these example
   requirements](https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/manage-users-create.html#GUID-72DFAF2A-C4C3-4FAC-A75B-846CC6EDBA3F))
 
 ### Requirements
-Apart an Autonomous Database configured to work with [TLS connectivity](https://blogs.oracle.com/developers/post/securely-connecting-to-autonomous-db-without-a-wallet-using-tls), you'll need a [JDK 17](https://www.oracle.com/java/technologies/downloads/).
+Apart an Autonomous Database configured to work with [*TLS connectivity* *](https://blogs.oracle.com/developers/post/securely-connecting-to-autonomous-db-without-a-wallet-using-tls), you'll need a [JDK 17](https://www.oracle.com/java/technologies/downloads/).
 
 You can get one for Linux as following:
 ```
@@ -47,6 +47,12 @@ tar -xf jdk-17_linux-x64_bin.tar.gz
 ```
 
 And don't forget to configure your `PATH` environment variable.
+
+[*]() _TLS connectivity requires to add your IP address to the allowed client addresses._
+* _If connecting from **your laptop or a VM**, retrieving the IP address should be straightforward._
+* _If connecting from **Oracle Cloud Infrastructure Cloud Shell**, then use the following command to retrieve its IP address:_
+  `curl -s checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//'`
+
 
 ### How to run the demos?
 Once the requirements are met, just clone the repo and build all the modules using Maven:
