@@ -46,6 +46,8 @@ curl -L -O https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.tar.g
 tar -xf jdk-17_linux-x64_bin.tar.gz
 ```
 
+And don't forget to configure your `PATH` environment variable.
+
 ### How to run the demos?
 Once the requirements are met, just clone the repo and build all the modules using Maven:
 ```
@@ -67,7 +69,7 @@ mvnw spring-boot:run -pl autorest
 ### Coming next...
 In no particular order yet:
 - Using Blockchain/Immutables tables
-- Reactive R2DBC driver
+- Reactive R2DBC driver 
 - Applied Machine Learning on JSON data
 - Memoptimized for write tables for IoT
 - Understanding execution plans and session statistics
@@ -77,7 +79,9 @@ In no particular order yet:
 - Property Graph Analytics with PGX and PGQL
 - Using Oracle Machine Learning for Python using GraalVM
 
-[//]: <> (https://asktom.oracle.com/pls/apex/asktom.search?oh=17401)
-[//]: <> (https://blogs.oracle.com/machinelearning/)
-[//]: <> (https://asktom.oracle.com/pls/apex/f?p=100:551::::551:P551_CLASS_ID,P551_INVITED:15741,N&cs=143C257921A735F18DBC7650B4E24685E)
+[//]: <> (RD2BC https://boottechnologies-ci.medium.com/spring-data-r2dbc-with-postgresql-database-on-amazon-rds-71864ab9af38)
+
+[//]: <> (OML4Py https://asktom.oracle.com/pls/apex/asktom.search?oh=17401)
+[//]: <> (OML4Py https://blogs.oracle.com/machinelearning/)
+[//]: <> (OML4Py https://asktom.oracle.com/pls/apex/f?p=100:551::::551:P551_CLASS_ID,P551_INVITED:15741,N&cs=143C257921A735F18DBC7650B4E24685E)
 
