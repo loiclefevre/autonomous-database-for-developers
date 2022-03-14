@@ -43,7 +43,7 @@ public class DatabaseConsumerGroupsApplication implements CommandLineRunner {
 		jdbcTemplate.setResultsMapCaseInsensitive(true);
 
 		switchConsumerGroup = new SimpleJdbcCall(jdbcTemplate)
-				.withSchemaName("SYS")
+				.withSchemaName("C##CLOUD$SERVICE")
 				.withCatalogName("CS_SESSION")
 				.withProcedureName("SWITCH_SERVICE")
 				.withoutProcedureColumnMetaDataAccess()
