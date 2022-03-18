@@ -7,4 +7,6 @@
 
 ### * see also:
 
-- [Autonomous JSON Database under the covers: OSON format](https://blogs.oracle.com/database/post/autonomous-json-database-under-the-covers-oson-format) 
+- [Autonomous JSON Database under the covers: OSON format](https://blogs.oracle.com/database/post/autonomous-json-database-under-the-covers-oson-format)
+
+![Query Example](./doc/img/query_example.png)
