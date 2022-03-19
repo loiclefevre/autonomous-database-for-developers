@@ -2,12 +2,12 @@
 `module dbconsumergroups`
 - Using the Hikari connection pool with the ADMIN user
 - Retrieving available database consumer groups
-- Switching between database consumer groups
+- Switching between database consumer groups using the `C##CLOUD$SERVICE.CS_SESSION.SWITCH_SERVICE()` stored procedure
 
 ### See also:
 - [Manage Concurrency and Priorities on Autonomous Database](https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/manage-priorities.html)
 
-From the documentation:
+From the **documentation**:
 The basic characteristics of these consumer groups are:
 
 - TPURGENT: The highest priority application connection service for time critical transaction processing operations. This connection service supports manual parallelism.
@@ -20,7 +20,5 @@ The basic characteristics of these consumer groups are:
 You can modify the MEDIUM service concurrency limit (this also changes the degree of parallelism). See Change MEDIUM Service Concurrency Limit for more information.
 
 - LOW: A lowest priority application connection service for reporting or batch processing operations. This connection service does not run with parallelism.
-
-**Note**:After connecting to the database using one service, do not attempt to manually switch that connection to a different service by simply changing the consumer group of the connection. When you connect using a service, Autonomous Database performs more actions to configure the connection than just setting its consumer group.
 
 ![Demo run](./doc/img/demo_run.png)
